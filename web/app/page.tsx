@@ -1,4 +1,5 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
+import SearchInput from '@/components/SearchInput';
 
 export const dynamic = 'force-dynamic';
 
@@ -8,13 +9,20 @@ const formatUrl = (url: string | null) => {
   return `https://${url}`;
 };
 
-export default async function Home() {
+export default async function Home(props: { searchParams: Promise<{ q?: string }> }) {
+  const searchParams = await props.searchParams;
+  const term = searchParams?.q;
   const supabase = createClient();
-  const { data: listings } = await supabase
-    .from('verified_roi_listings')
-    .select('*')
-    .order('calculated_roi', { ascending: false })
-    .limit(50);
+
+  let query = supabase.from('verified_roi_listings').select('*');
+
+  if (term) {
+    query = query.or(`school_name.ilike.%${term}%,city.ilike.%${term}%`);
+  } else {
+    query = query.order('calculated_roi', { ascending: false }).limit(50);
+  }
+
+  const { data: listings } = await query;
 
   return (
     <div>
@@ -35,16 +43,7 @@ export default async function Home() {
           </p>
 
           {/* Visual Search Bar */}
-          <div className="bg-white p-2 rounded-2xl max-w-lg mx-auto flex flex-col md:flex-row shadow-2xl shadow-black/50 transform hover:-translate-y-1 transition-all duration-300">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="flex-grow px-6 py-3 md:py-0 text-navy-900 outline-none rounded-xl md:rounded-l-xl font-medium text-lg placeholder:text-slate-400"
-            />
-            <button className="bg-primary text-navy-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-600 transition-colors shadow-lg w-full md:w-auto mt-2 md:mt-0">
-              Search
-            </button>
-          </div>
+          <SearchInput placeholder="Search..." />
         </div>
       </section>
 
@@ -52,7 +51,7 @@ export default async function Home() {
       <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
         <h2 className="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
           <span className="bg-primary w-2 h-8 rounded-full inline-block"></span>
-          Top Rated Programs
+          {term ? `Results for '${term}'` : 'Top Rated Programs'}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
