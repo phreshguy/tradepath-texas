@@ -2,6 +2,12 @@ import { createClientComponentClient as createClient } from '@/utils/supabase/cl
 
 export const dynamic = 'force-dynamic';
 
+const formatUrl = (url: string | null) => {
+  if (!url) return null;
+  if (url.startsWith('http')) return url;
+  return `https://${url}`;
+};
+
 export default async function Home() {
   const supabase = createClient();
   const { data: listings } = await supabase
@@ -29,13 +35,13 @@ export default async function Home() {
           </p>
 
           {/* Visual Search Bar */}
-          <div className="bg-white p-2 rounded-2xl max-w-lg mx-auto flex shadow-2xl shadow-black/50 transform hover:-translate-y-1 transition-all duration-300">
+          <div className="bg-white p-2 rounded-2xl max-w-lg mx-auto flex flex-col md:flex-row shadow-2xl shadow-black/50 transform hover:-translate-y-1 transition-all duration-300">
             <input
               type="text"
               placeholder="Search..."
-              className="flex-grow px-6 text-navy-900 outline-none rounded-l-xl font-medium text-lg placeholder:text-slate-400"
+              className="flex-grow px-6 py-3 md:py-0 text-navy-900 outline-none rounded-xl md:rounded-l-xl font-medium text-lg placeholder:text-slate-400"
             />
-            <button className="bg-primary text-navy-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-600 transition-colors shadow-lg">
+            <button className="bg-primary text-navy-900 font-bold px-8 py-3 rounded-xl hover:bg-amber-600 transition-colors shadow-lg w-full md:w-auto mt-2 md:mt-0">
               Search
             </button>
           </div>
@@ -112,7 +118,7 @@ export default async function Home() {
               {/* Footer Button */}
               <div className="p-4 bg-slate-50 border-t border-slate-100">
                 <a
-                  href={school.website || '#'}
+                  href={formatUrl(school.website) || '#'}
                   target="_blank"
                   className="block w-full text-center bg-navy-900 text-white font-bold py-3 rounded-xl text-sm hover:text-primary transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
                 >
