@@ -9,20 +9,37 @@ const formatUrl = (url: string | null) => {
   return `https://${url}`;
 };
 
-export default async function Home(props: { searchParams: Promise<{ q?: string }> }) {
+export default async function Home(props: { searchParams: Promise<{ trade?: string, city?: string }> }) {
   const searchParams = await props.searchParams;
-  const term = searchParams?.q;
+  const trade = searchParams?.trade;
+  const city = searchParams?.city;
   const supabase = createClient();
 
   let query = supabase.from('verified_roi_listings').select('*');
 
-  if (term) {
-    query = query.or(`school_name.ilike.%${term}%,city.ilike.%${term}%`);
-  } else {
-    query = query.order('calculated_roi', { ascending: false }).limit(50);
+  if (trade) {
+    query = query.eq('display_category', trade);
   }
 
+  if (city) {
+    query = query.ilike('city', `%${city}%`);
+  }
+
+  // Default Sort if no filters, or Apply Sort with filters 
+  // (We'll keep ROI sort as default for meaningful lists)
+  query = query.order('calculated_roi', { ascending: false }).limit(50);
+
   const { data: listings } = await query;
+
+  // Dynamic Header Logic
+  let headerTitle = "Top Rated Programs";
+  if (trade && city) {
+    headerTitle = `Showing ${trade}s in ${city}`;
+  } else if (trade) {
+    headerTitle = `Top Rated ${trade}s`;
+  } else if (city) {
+    headerTitle = `Top Programs in ${city}`;
+  }
 
   return (
     <div>
@@ -43,7 +60,7 @@ export default async function Home(props: { searchParams: Promise<{ q?: string }
           </p>
 
           {/* Visual Search Bar */}
-          <SearchInput placeholder="Search..." />
+          <SearchInput />
         </div>
       </section>
 
@@ -51,7 +68,7 @@ export default async function Home(props: { searchParams: Promise<{ q?: string }
       <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
         <h2 className="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
           <span className="bg-primary w-2 h-8 rounded-full inline-block"></span>
-          {term ? `Results for '${term}'` : 'Top Rated Programs'}
+          {headerTitle}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
