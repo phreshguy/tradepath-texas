@@ -68,10 +68,13 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
 
       {/* DATA GRID */}
       <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
-        <h2 className="text-2xl font-bold text-white mb-8 drop-shadow-md flex items-center gap-2">
+        <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-md flex items-center gap-2">
           <span className="bg-primary w-2 h-8 rounded-full inline-block"></span>
           {headerTitle}
         </h2>
+        <p className="text-xs text-slate-400 mb-8 ml-4">
+          Showing verified programs in {city || 'Texas'}...
+        </p>
 
         {(!listings || listings.length === 0) ? (
           <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-10 text-center">
@@ -116,7 +119,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                     <div className="flex justify-between items-baseline">
                       <span className="text-xs font-semibold text-slate-400 uppercase">Tuition</span>
                       {school.tuition_cost > 0 ? (
-                        <span className="text-sm font-medium text-slate-500">-${school.tuition_cost?.toLocaleString()}</span>
+                        <span className="text-sm font-medium text-slate-600">${school.tuition_cost?.toLocaleString()}</span>
                       ) : (
                         <span className="text-xs italic text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Contact School</span>
                       )}
