@@ -1,4 +1,5 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
+import Link from 'next/link';
 import SearchInput from '@/components/SearchInput';
 
 export const dynamic = 'force-dynamic';
@@ -157,6 +158,32 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
             ))}
           </div>
         )}
+      </section>
+
+      {/* BROWSE BY CITY SECTION */}
+      <section className="bg-slate-50 py-16 border-t border-slate-200 mt-24">
+        <div className="max-w-7xl mx-auto px-4">
+          <h2 className="text-2xl font-bold text-navy-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth', 'El Paso'].map((city) => (
+              <div key={city} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
+                <h3 className="font-bold text-lg text-navy-900 mb-4 border-b border-slate-100 pb-2">{city}</h3>
+                <div className="flex flex-col gap-2">
+                  {['Welding', 'HVAC', 'Electrician', 'Plumbing', 'Mechanic'].map((trade) => (
+                    <Link
+                      key={trade}
+                      href={`/local/${city.toLowerCase().replace(' ', '%20')}/${trade.toLowerCase().replace(' ', '-')}`}
+                      className="text-slate-500 hover:text-primary text-sm font-medium transition-colors flex items-center gap-2 group"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-primary transition-colors"></span>
+                      {city} {trade} Schools
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </section>
     </div>
   );
