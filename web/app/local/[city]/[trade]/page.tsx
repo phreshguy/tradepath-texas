@@ -54,12 +54,16 @@ export default async function Page({ params }: Props) {
 
     const supabase = createClient();
 
-    // Query: Filter by city (ilike for fuzzy matching handling) and strict mapped category
+    // Debug logging
+    console.log('Searching for:', { city: decodedCity, category: mappedTrade });
+
+    // Query: Filter by city (ilike for fuzzy matching handling) and program_name (fallback for missing display_category)
     const { data: listings } = await supabase
         .from('verified_roi_listings')
         .select('*')
-        .ilike('city', decodedCity)
-        .eq('display_category', mappedTrade)
+        .ilike('city', `%${decodedCity}%`)
+        // Use program_name as it seems to hold the category data in the current view version
+        .ilike('program_name', mappedTrade ? `%${mappedTrade}%` : '')
         .order('calculated_roi', { ascending: false });
 
     const hasListings = listings && listings.length > 0;
