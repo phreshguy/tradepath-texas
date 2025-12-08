@@ -16,7 +16,13 @@ select s.name as school_name,
         b.median_annual_salary - coalesce(p.tuition_cost, 0)
     ) as calculated_roi,
     b.soc_title,
-    b.soc_code
+    b.soc_code,
+    CASE
+        WHEN b.soc_code LIKE '47%' THEN 'Construction Trade'
+        WHEN b.soc_code LIKE '49%' THEN 'Mechanic/Repair Tech'
+        WHEN b.soc_code LIKE '51%' THEN 'Precision Production'
+        ELSE 'Other'
+    END as display_category
 from programs p
     join schools s on p.school_id = s.id
     join cip_soc_matrix csm on p.cip_code = csm.cip_code

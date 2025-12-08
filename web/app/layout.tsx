@@ -1,10 +1,12 @@
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tradepath-texas-1u6d.vercel.app'),
   title: 'TradePath | Texas Trade School ROI Engine',
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
   viewport: 'width=device-width, initial-scale=1',
@@ -53,6 +55,7 @@ export default function RootLayout({
             </p>
           </div>
         </footer>
+        <Analytics />
       </body>
     </html>
   );
