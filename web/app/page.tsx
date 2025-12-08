@@ -164,8 +164,8 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
       <section className="bg-slate-50 py-16 border-t border-slate-200 mt-24">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold text-navy-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {['Houston', 'San Antonio', 'Dallas', 'Austin', 'Fort Worth', 'El Paso'].map((city) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Lubbock', 'Laredo', 'Midland'].map((city) => (
               <div key={city} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <h3 className="font-bold text-lg text-navy-900 mb-4 border-b border-slate-100 pb-2">{city}</h3>
                 <div className="flex flex-col gap-2">
