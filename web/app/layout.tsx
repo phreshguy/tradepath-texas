@@ -36,8 +36,11 @@ export default function RootLayout({
             </div>
 
             {/* Nav Links */}
-            <div className="hidden sm:flex items-center gap-8 text-sm font-medium text-secondary">
-              <span className="text-xs opacity-50 text-slate-400">Not a government agency</span>
+            {/* Nav Links */}
+            <div className="flex items-center gap-4 sm:gap-8 text-sm font-medium z-50">
+              <Link href="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link>
+              <Link href="/about" className="text-slate-300 hover:text-white transition-colors">About</Link>
+              <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link>
             </div>
           </div>
         </nav>
