@@ -25,7 +25,7 @@ export default function BrandLogo() {
                     </svg>
                 </div>
             </div>
-            <span className="text-xl font-black tracking-tight text-navy-900 group-hover:text-primary transition-colors">
+            <span className="text-xl font-black tracking-tight text-white group-hover:text-white transition-colors">
                 TRADE<span className="text-primary font-bold">PATH</span>
             </span>
         </div>
