@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
 import BrandLogo from '@/components/BrandLogo';
+import Navbar from '@/components/Navbar';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -23,27 +24,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} bg-background text-foreground antialiased font-sans`}>
         {/* NAV */}
-        <nav className="bg-navy-900 text-white border-b border-white/10 sticky top-0 z-50 h-16">
-          <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
-            {/* Logo */}
-            <div className="flex items-center gap-2">
-              <Link href="/">
-                <BrandLogo />
-              </Link>
-              <span className="hidden sm:inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white/70 uppercase tracking-widest border border-white/5">
-                Texas Beta
-              </span>
-            </div>
-
-            {/* Nav Links */}
-            {/* Nav Links */}
-            <div className="flex items-center gap-4 sm:gap-8 text-sm font-medium z-50">
-              <Link href="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link>
-              <Link href="/about" className="text-slate-300 hover:text-white transition-colors">About</Link>
-              <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link>
-            </div>
-          </div>
-        </nav>
+        <Navbar />
 
         {/* PAGE CONTENT */}
         <main className="min-h-screen">
