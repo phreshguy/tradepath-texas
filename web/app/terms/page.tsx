@@ -8,7 +8,7 @@ export default function TermsPage() {
                         Last Updated: December 2025
                     </p>
                     <p className="mb-4">
-                        Please read these Terms of Service completely using TradePath which is owned and operated by TradePath. This Agreement documents the legally binding terms and conditions attached to the use of the Site at tradepath.org.
+                        Please read these Terms of Service completely using TradePath which is owned and operated by TradePath. This Agreement documents the legally binding terms and conditions attached to the use of the Site at tradepathusa.com.
                     </p>
 
                     <h2 className="text-xl font-bold text-navy-900 mt-8 mb-4">Disclaimer of Warranties</h2>

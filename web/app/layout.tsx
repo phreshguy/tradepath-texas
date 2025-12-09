@@ -2,13 +2,14 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
+import BrandLogo from '@/components/BrandLogo';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://tradepath-texas-1u6d.vercel.app'),
-  title: 'TradePath | Texas Trade School ROI Engine',
+  title: 'TradePathUSA | Texas Trade School ROI Engine',
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
   viewport: 'width=device-width, initial-scale=1',
 };
@@ -26,9 +27,9 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between">
             {/* Logo */}
             <div className="flex items-center gap-2">
-              <span className="text-xl font-bold tracking-tighter">
-                TRADE<span className="text-primary">PATH</span>
-              </span>
+              <Link href="/">
+                <BrandLogo />
+              </Link>
               <span className="hidden sm:inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white/70 uppercase tracking-widest border border-white/5">
                 Texas Beta
               </span>
@@ -51,7 +52,7 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center md:text-left">
               <div className="md:col-span-2">
-                <p className="mb-4 text-lg font-semibold text-slate-200 tracking-tight">TradePath.com &copy; 2025</p>
+                <p className="mb-4 text-lg font-semibold text-slate-200 tracking-tight">TradePathUSA.com &copy; 2025</p>
                 <p className="text-sm opacity-60 max-w-md leading-relaxed mx-auto md:mx-0">
                   Data sourced directly from the U.S. Department of Education (CollegeScorecard) & Bureau of Labor Statistics (OEWS).
                   <br />TradePath is an independent resource and is not a government entity. Salaries are estimations for educational purposes.

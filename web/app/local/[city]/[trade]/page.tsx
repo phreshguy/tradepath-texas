@@ -56,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const cityTitle = decodedCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
     return {
-        title: `Top Rated ${displayTrade} Schools in ${cityTitle}, TX (Salary & Cost) | TradePath`,
+        title: `Top Rated ${displayTrade} Schools in ${cityTitle}, TX (Salary & Cost) | TradePathUSA`,
         description: `Compare verified outcomes for ${displayTrade} programs in ${cityTitle}. Avg salary: $55k+. Govt Verified Data.`,
     };
 }

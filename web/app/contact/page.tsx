@@ -12,13 +12,13 @@ export default function ContactPage() {
                         <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
                             <h3 className="font-bold text-navy-900 mb-2">General Support</h3>
                             <p className="text-sm text-slate-500 mb-4">For questions about the website or how to use it.</p>
-                            <a href="mailto:support@tradepath.org" className="text-primary font-bold hover:underline">support@tradepath.org</a>
+                            <a href="mailto:support@tradepathusa.com" className="text-primary font-bold hover:underline">support@tradepathusa.com</a>
                         </div>
 
                         <div className="bg-slate-50 p-6 rounded-xl border border-slate-100">
                             <h3 className="font-bold text-navy-900 mb-2">School Corrections</h3>
                             <p className="text-sm text-slate-500 mb-4">Represent a school? Let us know if any data needs updating.</p>
-                            <a href="mailto:support@tradepath.org" className="text-primary font-bold hover:underline">support@tradepath.org</a>
+                            <a href="mailto:support@tradepathusa.com" className="text-primary font-bold hover:underline">support@tradepathusa.com</a>
                         </div>
                     </div>
 
