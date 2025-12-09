@@ -30,10 +30,10 @@ export default function Navbar() {
                         <Link href="/about" className="text-slate-300 hover:text-white transition-colors">About</Link>
                         <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link>
                         <Link
-                            href="/contact"
+                            href="#newsletter"
                             className="bg-primary hover:bg-orange-600 text-navy-900 font-bold px-4 py-2 rounded-lg transition-colors"
                         >
-                            For Schools
+                            Free Newsletter
                         </Link>
                     </div>
 
@@ -86,11 +86,11 @@ export default function Navbar() {
                             Contact
                         </Link>
                         <Link
-                            href="/contact"
+                            href="#newsletter"
                             onClick={closeMenu}
                             className="block px-3 py-3 mt-2 rounded-md text-base font-bold text-navy-900 bg-primary hover:bg-orange-600 text-center"
                         >
-                            For Schools
+                            Free Newsletter
                         </Link>
                     </div>
                 </div>
