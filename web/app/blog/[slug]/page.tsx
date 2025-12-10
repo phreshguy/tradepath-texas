@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
 
 export const revalidate = 60;
@@ -79,8 +80,25 @@ export default async function BlogPost({ params }: Props) {
                    If the user STRICTLY meant white text, the background should have been navy. 
                    I will stick to prose-slate for readability. 
                 */}
-                <article className="prose prose-slate prose-lg max-w-none">
-                    <ReactMarkdown>
+                <script
+                    type="application/ld+json"
+                    dangerouslySetInnerHTML={{
+                        __html: JSON.stringify({
+                            '@context': 'https://schema.org',
+                            '@type': 'Article',
+                            headline: post.title,
+                            description: post.meta_description || post.excerpt,
+                            image: post.cover_image_url ? [post.cover_image_url] : [],
+                            datePublished: post.published_at,
+                            author: {
+                                '@type': 'Organization',
+                                name: post.author || 'TradePath Editorial',
+                            },
+                        }),
+                    }}
+                />
+                <article className="prose prose-lg prose-slate max-w-none mx-auto prose-headings:font-bold prose-h1:text-navy-900 prose-a:text-primary">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {post.content_markdown}
                     </ReactMarkdown>
                 </article>
