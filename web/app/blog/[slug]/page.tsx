@@ -1,42 +1,25 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Link from 'next/link';
+import type { Metadata } from 'next';
 
-export const revalidate = 3600;
-
-// Standard components for the Markdown renderer
-const markdownComponents = {
-    // Style headings
-    h1: ({ node, ...props }: any) => <h1 className="text-3xl font-bold mt-8 mb-4 text-gray-900" {...props} />,
-    h2: ({ node, ...props }: any) => <h2 className="text-2xl font-bold mt-8 mb-4 text-gray-900 border-b pb-2" {...props} />,
-    h3: ({ node, ...props }: any) => <h3 className="text-xl font-bold mt-6 mb-3 text-gray-900" {...props} />,
-    // Style lists
-    ul: ({ node, ...props }: any) => <ul className="list-disc list-inside mb-4 pl-4" {...props} />,
-    ol: ({ node, ...props }: any) => <ol className="list-decimal list-inside mb-4 pl-4" {...props} />,
-    // Style paragraphs
-    p: ({ node, ...props }: any) => <p className="mb-4 leading-relaxed text-gray-700" {...props} />,
-    // Style links
-    a: ({ node, ...props }: any) => <a className="text-blue-600 underline hover:text-blue-800" {...props} />,
-    // Fix tables (The Critical Fix)
-    table: ({ node, ...props }: any) => (
-        <div className="overflow-x-auto my-8 border border-gray-200 rounded-lg shadow-sm">
-            <table className="min-w-full text-sm divide-y divide-gray-200" {...props} />
-        </div>
-    ),
-    thead: ({ node, ...props }: any) => <thead className="bg-gray-50 font-semibold" {...props} />,
-    tbody: ({ node, ...props }: any) => <tbody className="bg-white divide-y divide-gray-100" {...props} />,
-    tr: ({ node, ...props }: any) => <tr className="hover:bg-gray-50" {...props} />,
-    th: ({ node, ...props }: any) => <th className="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider" {...props} />,
-    td: ({ node, ...props }: any) => <td className="px-6 py-4 whitespace-nowrap text-gray-700" {...props} />,
-};
+export const revalidate = 0;
 
 type Props = {
     params: Promise<{
         slug: string;
     }>;
 };
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params;
+    const supabase = createClient();
+    const { data } = await supabase.from('blog_posts').select('*').eq('slug', slug).single();
+    if (!data) return {};
+    return { title: data.title };
+}
 
 export default async function BlogPost({ params }: Props) {
     const { slug } = await params;
@@ -46,44 +29,40 @@ export default async function BlogPost({ params }: Props) {
     if (!post) return notFound();
 
     return (
-        <main className="min-h-screen bg-white">
-            {/* HEADER: Clean Navy Top */}
-            <header className="bg-industrial-900 py-16 px-4 sm:px-6">
-                <div className="max-w-3xl mx-auto text-center">
-                    <Link href="/blog" className="text-safety-500 font-bold text-sm tracking-wide hover:text-white transition mb-6 inline-block">
-                        ← BACK TO JOURNAL
-                    </Link>
-                    <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-4">
-                        {post.title}
-                    </h1>
-                    <p className="text-slate-400">
-                        {new Date(post.published_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-                    </p>
-                </div>
-            </header>
+        <main className="bg-industrial-100 min-h-screen">
+            {/* NAV OVERRIDE (For Visual Consistency) */}
+            <div className="bg-industrial-900 h-24 absolute top-0 left-0 w-full z-0"></div>
 
-            {/* BODY: Clean White Paper */}
-            <article className="max-w-3xl mx-auto px-6 py-12">
-                {post.cover_image_url && (
-                    <img src={post.cover_image_url} alt={post.title} className="w-full h-auto rounded-lg shadow-lg mb-12 -mt-20 border-4 border-white" />
-                )}
+            <div className="max-w-4xl mx-auto px-4 py-12 relative z-10">
+                {/* Back Link */}
+                <Link href="/blog" className="text-safety-500 font-bold mb-6 inline-block hover:underline">
+                    &larr; Back to Journal
+                </Link>
 
-                {/* THE CONTENT RENDERER */}
-                <div className="prose prose-lg prose-slate max-w-none text-black">
-                    <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={markdownComponents}
-                    >
-                        {post.content_markdown}
-                    </ReactMarkdown>
-                </div>
+                {/* Main Content Card - WHITE BOX FORCE */}
+                <article className="bg-white rounded-2xl shadow-xl overflow-hidden">
 
-                {/* DISCLAIMER */}
-                <hr className="my-12 border-gray-200" />
-                <p className="text-sm text-gray-500 italic">
-                    Note: Career data verified via TradePathUSA.com database sources (BLS 2025).
-                </p>
-            </article>
+                    {/* Image */}
+                    {post.cover_image_url && (
+                        <img src={post.cover_image_url} alt={post.title} className="w-full h-64 md:h-96 object-cover" />
+                    )}
+
+                    {/* Text Container */}
+                    <div className="p-8 md:p-12">
+                        <h1 className="text-3xl md:text-5xl font-black text-industrial-900 mb-4">{post.title}</h1>
+                        <p className="text-gray-500 text-sm mb-8 border-b pb-8">
+                            Published: {new Date(post.published_at).toLocaleDateString()}
+                        </p>
+
+                        {/* THE RENDERER - Force Standard Styling */}
+                        <div className="prose prose-lg prose-slate max-w-none prose-headings:font-bold prose-headings:text-industrial-900 prose-a:text-safety-600">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                                {post.content_markdown}
+                            </ReactMarkdown>
+                        </div>
+                    </div>
+                </article>
+            </div>
         </main>
     );
 }
