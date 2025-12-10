@@ -1,11 +1,11 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
+import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { Metadata } from 'next';
+import type { Metadata } from 'next';
 
-export const revalidate = 60; // ISR for SEO
+export const revalidate = 3600; // Cache for 1 hour
 
 type Props = {
     params: Promise<{
@@ -16,13 +16,12 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
     const supabase = createClient();
-    const { data: post } = await supabase.from('blog_posts').select('*').eq('slug', slug).single();
-    if (!post) return {};
-
+    const { data } = await supabase.from('blog_posts').select('*').eq('slug', slug).single();
+    if (!data) return {};
     return {
-        title: `${post.title} | TradePath Texas`,
-        description: post.excerpt || post.content_markdown.substring(0, 150),
-        openGraph: { images: post.cover_image_url ? [post.cover_image_url] : [] }
+        title: `${data.title} | TradePath Texas`,
+        description: data.excerpt,
+        openGraph: { images: [data.cover_image_url || '/og-image.png'] }
     };
 }
 
@@ -33,51 +32,70 @@ export default async function BlogPost({ params }: Props) {
 
     if (!post) return notFound();
 
+    // Schema.org for Google
+    const jsonLd = {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: post.title,
+        image: post.cover_image_url,
+        datePublished: post.published_at,
+        author: { '@type': 'Organization', name: 'TradePath Editorial' }
+    };
+
     return (
-        <article className="min-h-screen bg-white">
-            {/* HEADER */}
-            <div className="bg-industrial-900 text-white py-20 px-4 text-center">
-                <div className="max-w-4xl mx-auto">
-                    <Link href="/blog" className="text-safety-500 font-bold text-sm hover:underline mb-4 block">← BACK TO JOURNAL</Link>
-                    <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6">{post.title}</h1>
-                    <div className="text-slate-400 text-sm flex justify-center gap-4">
-                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
+        <main className="bg-white min-h-screen">
+            {/* HEADER (Navy Brand) */}
+            <header className="bg-industrial-900 pt-24 pb-12 px-6">
+                <div className="max-w-3xl mx-auto text-center">
+                    <Link href="/blog" className="text-safety-500 font-bold text-xs uppercase tracking-widest hover:text-white mb-6 block transition">
+                        ← Back to Insights
+                    </Link>
+                    <h1 className="text-3xl md:text-5xl font-black text-white leading-tight mb-6">
+                        {post.title}
+                    </h1>
+                    <div className="flex justify-center items-center gap-3 text-slate-400 text-sm">
+                        <span className="bg-white/10 px-2 py-1 rounded text-white font-medium">Verified Data</span>
                         <span>•</span>
-                        <span>TradePath Verified Data</span>
+                        <time>{new Date(post.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</time>
                     </div>
                 </div>
-            </div>
+            </header>
 
-            {/* CONTENT */}
-            <div className="max-w-3xl mx-auto px-6 py-12">
+            {/* ARTICLE BODY (White Paper Clean) */}
+            <article className="max-w-3xl mx-auto px-6 -mt-8 relative z-10 pb-20">
 
-                {/* Main Image */}
+                {/* Featured Image */}
                 {post.cover_image_url && (
-                    <img src={post.cover_image_url} alt={post.title} className="w-full h-auto rounded-xl shadow-lg mb-12" />
+                    <img
+                        src={post.cover_image_url}
+                        alt={post.title}
+                        className="w-full aspect-video object-cover rounded-xl shadow-xl border-4 border-white mb-12 bg-gray-100"
+                    />
                 )}
 
-                {/* MARKDOWN RENDERER */}
+                {/* CONTENT ENGINE */}
                 <div className="prose prose-lg prose-slate max-w-none 
             prose-headings:font-bold prose-headings:text-industrial-900 
-            prose-a:text-safety-600 prose-a:no-underline hover:prose-a:underline
-            prose-table:border prose-table:text-sm prose-th:bg-slate-100 prose-th:p-4 prose-td:p-4">
+            prose-p:leading-relaxed prose-li:marker:text-safety-500
+            prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline
+            prose-th:bg-industrial-50 prose-th:text-industrial-900 prose-th:p-4
+            prose-td:border-b prose-td:border-gray-100 prose-td:p-4
+            first-letter:float-left first-letter:text-5xl first-letter:font-bold first-letter:mr-3 first-letter:text-safety-500">
 
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {post.content_markdown}
                     </ReactMarkdown>
-
                 </div>
 
-                {/* NEWSLETTER CTA */}
-                <div className="mt-20 p-8 bg-industrial-100 rounded-2xl text-center border border-industrial-200">
-                    <h3 className="text-2xl font-bold text-industrial-900 mb-2">Want these jobs?</h3>
-                    <p className="text-slate-600 mb-6">Get verified trade school lists and scholarship info sent to your inbox.</p>
-                    <a href="#newsletter" className="inline-block bg-safety-500 hover:bg-safety-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:scale-105">
-                        Join Newsletter
-                    </a>
+                {/* Footer Disclaimer */}
+                <div className="mt-12 pt-8 border-t border-gray-100 text-xs text-gray-400 italic">
+                    Source references: TradePath Internal Database, BLS.gov OEWS 2024, Dept of Education.
+                    <script
+                        type="application/ld+json"
+                        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                    />
                 </div>
-
-            </div>
-        </article>
+            </article>
+        </main>
     );
 }
