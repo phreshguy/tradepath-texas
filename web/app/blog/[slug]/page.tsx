@@ -19,13 +19,13 @@ export async function generateMetadata({ params }: Props) {
     // For specific posts, we just return basic metadata or fetch from DB.
     // To save an extra call we could assume title for now or fetch.
     const supabase = createClient();
-    const { data: post } = await supabase.from('blog_posts').select('title, excerpt').eq('slug', slug).single();
+    const { data: post } = await supabase.from('blog_posts').select('title, excerpt, meta_description').eq('slug', slug).single();
 
     if (!post) return { title: 'Article Not Found' };
 
     return {
         title: `${post.title} | TradePathUSA Journal`,
-        description: post.excerpt,
+        description: post.meta_description || post.excerpt,
     };
 }
 

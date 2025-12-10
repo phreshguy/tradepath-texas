@@ -9,6 +9,7 @@ export default async function BlogIndex() {
     const { data: posts } = await supabase
         .from('blog_posts')
         .select('title, slug, excerpt, published_at, cover_image_url')
+        .eq('status', 'published')
         .order('published_at', { ascending: false });
 
     return (
