@@ -16,6 +16,13 @@ const config: Config = {
                 navy: {
                     900: "#0F172A", // Slate 900
                 },
+                industrial: {
+                    900: '#0F172A', // Navy 900 alias
+                    100: '#F1F5F9', // Slate 100
+                },
+                safety: {
+                    500: '#F59E0B', // Primary Orange alias
+                },
             },
         },
     },
