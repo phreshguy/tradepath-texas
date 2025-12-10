@@ -1,11 +1,11 @@
-import { notFound } from 'next/navigation';
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
-import { format } from 'date-fns';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import { Metadata } from 'next';
 
-export const revalidate = 60;
+export const revalidate = 60; // ISR for SEO
 
 type Props = {
     params: Promise<{
@@ -13,96 +13,71 @@ type Props = {
     }>;
 };
 
-export async function generateMetadata({ params }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { slug } = await params;
-
-    // Note: We might want to fetch here again or just rely on title if we passed it, but correct way is to fetch.
-    // For specific posts, we just return basic metadata or fetch from DB.
-    // To save an extra call we could assume title for now or fetch.
     const supabase = createClient();
-    const { data: post } = await supabase.from('blog_posts').select('title, excerpt, meta_description').eq('slug', slug).single();
-
-    if (!post) return { title: 'Article Not Found' };
+    const { data: post } = await supabase.from('blog_posts').select('*').eq('slug', slug).single();
+    if (!post) return {};
 
     return {
-        title: `${post.title} | TradePathUSA Journal`,
-        description: post.meta_description || post.excerpt,
+        title: `${post.title} | TradePath Texas`,
+        description: post.excerpt || post.content_markdown.substring(0, 150),
+        openGraph: { images: post.cover_image_url ? [post.cover_image_url] : [] }
     };
 }
 
 export default async function BlogPost({ params }: Props) {
     const { slug } = await params;
     const supabase = createClient();
+    const { data: post } = await supabase.from('blog_posts').select('*').eq('slug', slug).single();
 
-    const { data: post } = await supabase
-        .from('blog_posts')
-        .select('*')
-        .eq('slug', slug)
-        .single();
-
-    if (!post) {
-        notFound();
-    }
+    if (!post) return notFound();
 
     return (
-        <div className="bg-white min-h-screen">
-            {/* Header / Hero */}
-            <div className="bg-navy-900 text-white py-16 px-4 border-b border-primary/20">
-                <div className="max-w-3xl mx-auto text-center">
-                    <Link href="/blog" className="text-primary font-bold text-sm tracking-widest uppercase mb-6 inline-block hover:underline">
-                        ← Back to Journal
-                    </Link>
-                    <h1 className="text-3xl md:text-5xl font-bold mb-6 leading-tight">
-                        {post.title}
-                    </h1>
-                    <div className="flex items-center justify-center gap-4 text-slate-400 text-sm">
-                        <span>{format(new Date(post.published_at), 'MMMM d, yyyy')}</span>
+        <article className="min-h-screen bg-white">
+            {/* HEADER */}
+            <div className="bg-industrial-900 text-white py-20 px-4 text-center">
+                <div className="max-w-4xl mx-auto">
+                    <Link href="/blog" className="text-safety-500 font-bold text-sm hover:underline mb-4 block">← BACK TO JOURNAL</Link>
+                    <h1 className="text-4xl md:text-5xl font-black leading-tight mb-6">{post.title}</h1>
+                    <div className="text-slate-400 text-sm flex justify-center gap-4">
+                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
                         <span>•</span>
-                        <span>{post.author || 'TradePath Editorial'}</span>
+                        <span>TradePath Verified Data</span>
                     </div>
                 </div>
             </div>
 
-            {/* Content Body */}
-            <div className="max-w-3xl mx-auto px-6 py-16">
+            {/* CONTENT */}
+            <div className="max-w-3xl mx-auto px-6 py-12">
+
+                {/* Main Image */}
                 {post.cover_image_url && (
-                    <img
-                        src={post.cover_image_url}
-                        alt={post.title}
-                        className="w-full h-64 md:h-96 object-cover rounded-2xl shadow-lg mb-12"
-                    />
+                    <img src={post.cover_image_url} alt={post.title} className="w-full h-auto rounded-xl shadow-lg mb-12" />
                 )}
 
-                {/* 
-                   User requested "prose prose-invert". 
-                   However, we are on a white background. "prose-invert" makes text white/light which would be invisible.
-                   I am using "prose prose-slate" for correct dark-on-light contrast compliant with the "Standard UI" of the site.
-                   If the user STRICTLY meant white text, the background should have been navy. 
-                   I will stick to prose-slate for readability. 
-                */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            '@context': 'https://schema.org',
-                            '@type': 'Article',
-                            headline: post.title,
-                            description: post.meta_description || post.excerpt,
-                            image: post.cover_image_url ? [post.cover_image_url] : [],
-                            datePublished: post.published_at,
-                            author: {
-                                '@type': 'Organization',
-                                name: post.author || 'TradePath Editorial',
-                            },
-                        }),
-                    }}
-                />
-                <article className="prose prose-lg prose-slate max-w-none mx-auto prose-headings:font-bold prose-h1:text-navy-900 prose-a:text-primary">
+                {/* MARKDOWN RENDERER */}
+                <div className="prose prose-lg prose-slate max-w-none 
+            prose-headings:font-bold prose-headings:text-industrial-900 
+            prose-a:text-safety-600 prose-a:no-underline hover:prose-a:underline
+            prose-table:border prose-table:text-sm prose-th:bg-slate-100 prose-th:p-4 prose-td:p-4">
+
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {post.content_markdown}
                     </ReactMarkdown>
-                </article>
+
+                </div>
+
+                {/* NEWSLETTER CTA */}
+                <div className="mt-20 p-8 bg-industrial-100 rounded-2xl text-center border border-industrial-200">
+                    <h3 className="text-2xl font-bold text-industrial-900 mb-2">Want these jobs?</h3>
+                    <p className="text-slate-600 mb-6">Get verified trade school lists and scholarship info sent to your inbox.</p>
+                    <a href="#newsletter" className="inline-block bg-safety-500 hover:bg-safety-600 text-white font-bold py-3 px-8 rounded-lg shadow-md transition transform hover:scale-105">
+                        Join Newsletter
+                    </a>
+                </div>
+
             </div>
-        </div>
+        </article>
     );
 }
