@@ -151,7 +151,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                   <a
                     href={formatUrl(school.website) || '#'}
                     target="_blank"
-                    className="block w-full text-center bg-industrial-900 text-white font-bold py-3 rounded-xl text-sm hover:text-safety-500 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="block w-full text-center bg-industrial-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-safety-500 hover:text-industrial-900 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
                   >
                     Visit School
                   </a>
