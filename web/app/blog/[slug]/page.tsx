@@ -7,7 +7,8 @@ import type { Metadata } from 'next';
 
 export const revalidate = 0;
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const params = await props.params;
     const supabase = createClient();
     const { data } = await supabase.from('blog_posts').select('*').eq('slug', params.slug).single();
     if (!data) return {};
@@ -17,7 +18,8 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     };
 }
 
-export default async function BlogPost({ params }: { params: { slug: string } }) {
+export default async function BlogPost(props: { params: Promise<{ slug: string }> }) {
+    const params = await props.params;
     const supabase = createClient();
     const { data: post } = await supabase.from('blog_posts').select('*').eq('slug', params.slug).single();
 
