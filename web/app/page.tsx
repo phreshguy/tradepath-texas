@@ -52,18 +52,20 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
+          <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-6 sm:mb-8 leading-tight">
             Blue Collar is the <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 via-orange-400 to-yellow-200">
               New Gold Collar
             </span>
           </h1>
-          <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto leading-relaxed font-light">
+          <p className="text-lg sm:text-xl text-slate-300 mb-8 sm:mb-12 max-w-2xl mx-auto leading-relaxed font-light px-4">
             Compare 90+ Texas verified trade programs by real salary outcomes.
           </p>
 
           {/* Visual Search Bar */}
-          <SearchInput />
+          <div className="px-4">
+            <SearchInput />
+          </div>
         </div>
       </section>
 
@@ -163,8 +165,8 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
       {/* BROWSE BY CITY SECTION */}
       <section className="bg-industrial-50 py-16 border-t border-slate-200 mt-24">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-industrial-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <h2 className="text-xl md:text-2xl font-bold text-industrial-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
             {['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Lubbock', 'Laredo', 'Midland'].map((city) => (
               <div key={city} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <h3 className="font-bold text-lg text-industrial-900 mb-4 border-b border-slate-100 pb-2">{city}</h3>

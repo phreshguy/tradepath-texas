@@ -50,7 +50,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
         <main className="min-h-screen bg-white text-slate-900 font-sans">
 
             {/* 1. DARK HEADER SECTION (Matches Screenshot) */}
-            <header className="bg-industrial-900 text-white pt-32 pb-16 px-6">
+            <header className="bg-industrial-900 text-white pt-24 md:pt-32 pb-12 md:pb-16 px-4 md:px-6">
                 <div className="max-w-3xl mx-auto text-center">
 
                     {/* BREADCRUMB */}
@@ -87,19 +87,34 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 {headings.length > 0 && <TableOfContents headings={headings} />}
 
                 {/* CONTENT */}
-                <div className="prose prose-slate md:prose-lg max-w-none 
+                <div className="prose prose-base md:prose-lg max-w-none 
             prose-headings:text-industrial-900 prose-headings:font-bold
             prose-a:text-blue-600 hover:prose-a:underline
             prose-th:p-4 prose-th:bg-slate-50 prose-td:p-4
             prose-table:border prose-table:border-slate-200">
 
-                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
+                    <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        rehypePlugins={[rehypeSlug]}
+                        components={{
+                            // Responsive Table Wrapper
+                            table: ({ node, ...props }: any) => (
+                                <div className="overflow-x-auto my-8 border border-slate-200 rounded-lg">
+                                    <table className="min-w-full text-sm" {...props} />
+                                </div>
+                            ),
+                            // Force Images to fit screen
+                            img: ({ node, ...props }: any) => (
+                                <img className="w-full h-auto rounded-lg my-6" {...props} />
+                            )
+                        }}
+                    >
                         {cleanContent}
                     </ReactMarkdown>
                 </div>
 
                 {/* BOTTOM CTA */}
-                <div className="mt-16 p-8 bg-slate-100 rounded-xl text-center border border-slate-200">
+                <div className="mt-12 md:mt-16 p-6 md:p-8 bg-slate-100 rounded-xl text-center border border-slate-200">
                     <h3 className="text-2xl font-bold mb-3 text-slate-900">Don't guess with your future.</h3>
                     <p className="text-slate-600 mb-6">See verified trade programs and real salaries.</p>
                     <Link href="/" className="inline-block bg-safety-500 text-industrial-900 font-bold py-3 px-8 rounded hover:bg-white transition">
