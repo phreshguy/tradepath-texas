@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/client';
+import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
