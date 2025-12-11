@@ -27,39 +27,43 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
 
     return (
         <main className="min-h-screen bg-white text-slate-900 font-sans">
-            {/* NAV SPACER to clear fixed header */}
-            <div className="h-16 bg-industrial-900"></div>
 
-            {/* ARTICLE CONTAINER */}
-            <article className="max-w-3xl mx-auto px-6 py-16">
+            {/* 1. DARK HEADER SECTION (Matches Screenshot) */}
+            <header className="bg-industrial-900 text-white pt-32 pb-16 px-6">
+                <div className="max-w-3xl mx-auto text-center">
 
-                {/* BREADCRUMB */}
-                <div className="mb-8">
-                    <Link href="/blog" className="text-safety-600 font-bold text-xs uppercase tracking-widest hover:underline flex items-center gap-2">
+                    {/* BREADCRUMB */}
+                    <Link href="/blog" className="inline-flex items-center gap-2 text-safety-500 font-bold text-xs uppercase tracking-widest hover:text-white transition mb-6">
                         <span>←</span> Back to Journal
                     </Link>
-                </div>
 
-                {/* TITLE BLOCK */}
-                <h1 className="text-3xl md:text-5xl font-black text-industrial-900 mb-6 leading-tight">
-                    {post.title}
-                </h1>
-                <div className="flex items-center gap-4 text-sm text-slate-500 mb-10 pb-10 border-b border-slate-100">
-                    <span className="bg-industrial-100 text-industrial-800 px-2 py-1 rounded font-medium">Verified Data</span>
-                    <span>{new Date(post.published_at).toLocaleDateString()}</span>
-                    <span>By TradePath Editorial</span>
+                    {/* TITLE */}
+                    <h1 className="text-3xl md:text-5xl font-black mb-6 leading-tight">
+                        {post.title}
+                    </h1>
+
+                    {/* METADATA */}
+                    <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
+                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                        <span>•</span>
+                        <span>TradePath Editorial</span>
+                    </div>
                 </div>
+            </header>
+
+            {/* 2. WHITE CONTENT CONTAINER */}
+            <article className="max-w-3xl mx-auto px-6 py-12 -mt-8 relative z-10">
 
                 {/* HERO IMAGE */}
                 {post.cover_image_url && (
                     <img
                         src={post.cover_image_url}
                         alt={post.title}
-                        className="w-full h-auto rounded-xl mb-12 shadow-sm border border-slate-100"
+                        className="w-full h-auto rounded-xl mb-12 shadow-lg border-4 border-white"
                     />
                 )}
 
-                {/* THE CONTENT RENDERER (Clean Typography) */}
+                {/* CONTENT */}
                 <div className="prose prose-lg prose-slate max-w-none 
             prose-headings:text-industrial-900 prose-headings:font-bold
             prose-a:text-blue-600 hover:prose-a:underline
