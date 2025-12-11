@@ -52,7 +52,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
+          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
             Blue Collar is the <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 via-orange-400 to-yellow-200">
               New Gold Collar
@@ -69,7 +69,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
 
       {/* DATA GRID */}
       <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
-        <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-md flex items-center gap-2">
+        <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-md flex items-center gap-2">
           <span className="bg-safety-500 w-2 h-8 rounded-full inline-block"></span>
           {headerTitle}
         </h2>

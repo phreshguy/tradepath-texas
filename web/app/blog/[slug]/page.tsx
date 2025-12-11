@@ -64,7 +64,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 )}
 
                 {/* CONTENT */}
-                <div className="prose prose-lg prose-slate max-w-none 
+                <div className="prose prose-slate md:prose-lg max-w-none 
             prose-headings:text-industrial-900 prose-headings:font-bold
             prose-a:text-blue-600 hover:prose-a:underline
             prose-th:p-4 prose-th:bg-slate-50 prose-td:p-4

@@ -4,4 +4,13 @@
 
 html {
     scroll-behavior: smooth;
+    font-size: 16px;
+    /* Explicit base for consistent rems */
+}
+
+@media (max-width: 640px) {
+    html {
+        font-size: 15px;
+        /* Slightly smaller base on small mobile if needed, or keep 16px */
+    }
 }
