@@ -123,29 +123,43 @@ export default async function Page({ params }: Props) {
     const hasListings = listings && listings.length > 0;
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            {/* Small Nav Strip for Context */}
-            <div className="bg-navy-900 text-white/60 text-sm py-2 px-4 border-b border-white/10">
-                <div className="max-w-7xl mx-auto">
-                    <Link href="/" className="hover:text-white transition-colors">← Back to Search</Link>
-                </div>
-            </div>
+        <div className="min-h-screen bg-industrial-100">
+            {/* HERO HEADER SECTION (Matches Homepage) */}
+            <section className="bg-industrial-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
+                {/* Pattern Overlay */}
+                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
-            <div className="max-w-7xl mx-auto px-4 py-12">
-                <h1 className="text-3xl md:text-5xl font-bold text-navy-900 mb-4">
-                    Top Rated <span className="text-primary">{displayTrade}</span> Schools in <span className="underline decoration-blue-200">{cityTitle}, TX</span>
-                </h1>
-                <p className="text-lg text-slate-600 mb-8 max-w-3xl">
-                    Verified government data on salaries, tuition, and ROI for {displayTrade} careers in {cityTitle}.
-                </p>
+                <div className="max-w-7xl mx-auto relative z-10 text-center md:text-left">
+                    {/* BREADCRUMB */}
+                    <div className="mb-4 text-sm font-medium text-slate-400">
+                        <Link href="/" className="hover:text-white transition-colors">Search</Link>
+                        <span className="mx-2">/</span>
+                        <span className="text-safety-500">{cityTitle}</span>
+                        <span className="mx-2">/</span>
+                        <span className="text-white">{displayTrade}</span>
+                    </div>
+
+                    <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
+                        Top Rated <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-200">{displayTrade}</span> Schools <br /> in {cityTitle}, TX
+                    </h1>
+                    <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+                        Verified government data on salaries, tuition, and ROI for {displayTrade} careers in the {cityTitle} area.
+                    </p>
+                </div>
+            </section>
+
+            {/* CONTENT GRID CONTAINER */}
+            <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
 
                 {/* Fallback Notice */}
                 {isFallback && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-12 flex items-start gap-3">
-                        <span className="text-amber-500 font-bold text-xl">ℹ️</span>
+                    <div className="bg-white border-l-4 border-amber-500 rounded-lg shadow-lg p-6 mb-8 flex items-start gap-4 mx-auto max-w-3xl md:mx-0">
+                        <div className="bg-amber-100 p-2 rounded-full flex-shrink-0">
+                            <span className="text-amber-600 font-bold text-xl">ℹ️</span>
+                        </div>
                         <div>
-                            <p className="text-amber-800 font-bold">Widen Search</p>
-                            <p className="text-amber-700 text-sm">
+                            <h3 className="text-amber-900 font-bold text-lg mb-1">Widen Search Active</h3>
+                            <p className="text-amber-800/80 text-sm leading-relaxed">
                                 We couldn't find specific "{displayTrade}" programs in {cityTitle} right now.
                                 Showing top rated <strong>{mappedCategory}</strong> schools in the area instead.
                             </p>
@@ -154,81 +168,60 @@ export default async function Page({ params }: Props) {
                 )}
 
                 {!hasListings && !isFallback ? (
-                    <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-12 text-center">
-                        <h3 className="text-xl font-bold text-navy-900 mb-2">No programs found in {cityTitle} specifically.</h3>
+                    <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-12 text-center max-w-2xl mx-auto">
+                        <h3 className="text-xl font-bold text-industrial-900 mb-2">No programs found in {cityTitle} specifically.</h3>
                         <p className="text-slate-500 mb-6">These programs might be just outside the city limits or in verifying status.</p>
-                        <Link href="/" className="inline-block bg-primary text-navy-900 font-bold px-6 py-3 rounded-xl hover:bg-orange-600 hover:text-white transition-colors">
+                        <Link href="/" className="inline-block bg-safety-500 text-industrial-900 font-bold px-8 py-3 rounded-xl hover:bg-white border border-transparent hover:border-industrial-200 transition-all">
                             Search Nearby Cities
                         </Link>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {listings.map((school: any, i: number) => (
-                            <div key={i} className="bg-white rounded-2xl shadow-xl border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl hover:border-primary/30 transition-all duration-300">
-
-                                {/* Card Top: ROI Badge */}
-                                <div className="bg-slate-50/80 backdrop-blur-sm px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                            /* Card Start */
+                            <div key={i} className="bg-white rounded-xl shadow-lg border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl transition-all duration-300">
+                                {/* Card Header */}
+                                <div className="bg-slate-50 px-5 py-3 border-b border-slate-100 flex justify-between items-center">
                                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. 1st Year ROI</span>
-                                    <span className="text-success font-black text-xl tracking-tight">
-                                        +${school.calculated_roi?.toLocaleString()}
-                                    </span>
+                                    <span className="text-success-500 font-black text-lg">+${school.calculated_roi?.toLocaleString()}</span>
                                 </div>
 
                                 {/* Card Content */}
                                 <div className="p-6 flex-grow">
-                                    {/* School Name */}
-                                    <h3 className="text-lg font-bold text-navy-900 mb-2 leading-tight line-clamp-2">
+                                    <h3 className="text-lg font-bold text-industrial-900 mb-1 leading-tight group-hover:text-safety-600 transition-colors line-clamp-2">
                                         {school.school_name}
                                     </h3>
-
-                                    {/* Details: Program Name */}
-                                    <p className="text-primary text-sm font-bold mb-4">{school.program_name}</p>
-
-                                    {/* Location with Fixed SVG Icon */}
-                                    <div className="text-sm text-secondary mb-6 flex items-start gap-1.5">
-                                        <svg width="16" height="16" className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        </svg>
-                                        <span>{school.city}, {school.state}</span>
+                                    <div className="text-sm text-slate-500 mb-6 flex items-center">
+                                        <span className="mr-1 opacity-50">📍</span>
+                                        {school.city}, {school.state}
                                     </div>
-
-                                    <div className="space-y-5">
-                                        {/* Tuition Detail */}
+                                    <div className="space-y-4">
+                                        <div className="flex justify-between items-baseline">
+                                            <span className="text-xs font-semibold text-slate-400 uppercase">Program</span>
+                                            <span className="text-sm font-bold text-industrial-800 text-right">{school.program_name}</span>
+                                        </div>
                                         <div className="flex justify-between items-baseline">
                                             <span className="text-xs font-semibold text-slate-400 uppercase">Tuition</span>
                                             {school.tuition_cost > 0 ? (
-                                                <span className="text-sm font-medium text-slate-600">${school.tuition_cost?.toLocaleString()}</span>
+                                                <span className="text-sm font-medium text-slate-600">${school.tuition_cost.toLocaleString()}</span>
                                             ) : (
-                                                <span className="text-xs italic text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Contact School</span>
+                                                <span className="text-xs italic text-slate-400">Contact for Pricing</span>
                                             )}
                                         </div>
-
-                                        {/* Salary Block */}
-                                        <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 mt-2">
-                                            <div className="flex justify-between items-end">
-                                                <div className="flex flex-col gap-1">
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase">Projected Salary</span>
-                                                    {/* Trust Link */}
-                                                    <a href={school.salary_source_url || '#'} target="_blank" className="text-[10px] text-blue-500 font-medium hover:text-blue-700 flex items-center gap-1 group/link">
-                                                        Verify Gov Data
-                                                    </a>
-                                                </div>
-                                                <span className="text-2xl font-black text-navy-900 tracking-tight">
-                                                    ${school.projected_salary?.toLocaleString()}
-                                                </span>
+                                        <div className="border-t border-dashed border-slate-200"></div>
+                                        <div className="flex justify-between items-end">
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-bold text-slate-400 uppercase mb-0.5">Proj. Salary</span>
+                                                <a href={school.salary_source_url} target="_blank" className="text-[10px] text-blue-500 underline hover:text-blue-700">Verify Data</a>
                                             </div>
+                                            <span className="text-2xl font-black text-industrial-900">${school.projected_salary?.toLocaleString()}</span>
                                         </div>
                                     </div>
                                 </div>
 
-                                {/* Footer Button */}
-                                <div className="p-4 bg-slate-50 border-t border-slate-100">
-                                    <a
-                                        href={formatUrl(school.website) || '#'}
-                                        target="_blank"
-                                        className="block w-full text-center bg-navy-900 text-white font-bold py-3 rounded-xl text-sm hover:text-primary transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
-                                    >
+                                {/* Card Button */}
+                                <div className="p-4 bg-slate-50/50">
+                                    <a href={formatUrl(school.website) || '#'} target="_blank" className="block w-full text-center bg-industrial-900 text-white font-bold py-2.5 rounded-lg text-sm hover:bg-safety-500 hover:text-industrial-900 transition-all shadow-sm hover:shadow-md">
                                         Visit School
                                     </a>
                                 </div>
@@ -236,7 +229,7 @@ export default async function Page({ params }: Props) {
                         ))}
                     </div>
                 )}
-            </div>
+            </section>
         </div>
     );
 }
