@@ -4,6 +4,8 @@ import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Metadata } from 'next';
+import TableOfContents from '@/components/TableOfContents';
+import rehypeSlug from 'rehype-slug';
 
 // Helper to grab H2 headers for the TOC
 const getHeadings = (source: string) => {
@@ -82,16 +84,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                     />
                 )}
 
-                {headings.length > 0 && (
-                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 mb-10">
-                        <p className="font-bold text-industrial-900 mb-4 text-sm uppercase tracking-wide">Quick Navigation</p>
-                        <ul className="space-y-2 text-sm text-blue-600 underline">
-                            {headings.map((heading) => (
-                                <li key={heading}>{heading}</li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
+                {headings.length > 0 && <TableOfContents headings={headings} />}
 
                 {/* CONTENT */}
                 <div className="prose prose-slate md:prose-lg max-w-none 
@@ -100,7 +93,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
             prose-th:p-4 prose-th:bg-slate-50 prose-td:p-4
             prose-table:border prose-table:border-slate-200">
 
-                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeSlug]}>
                         {cleanContent}
                     </ReactMarkdown>
                 </div>
