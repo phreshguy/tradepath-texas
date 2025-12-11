@@ -25,6 +25,12 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
 
     if (!post) return notFound();
 
+    // THE FIX: Strip AI "code fences" if present
+    const cleanContent = post.content_markdown
+        .replace(/^```markdown\s*/, '') // Remove top ```markdown
+        .replace(/^```\s*/, '')         // Remove generic ```
+        .replace(/```$/, '');            // Remove bottom ```
+
     return (
         <main className="min-h-screen bg-white text-slate-900 font-sans">
 
@@ -71,7 +77,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
             prose-table:border prose-table:border-slate-200">
 
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                        {post.content_markdown}
+                        {cleanContent}
                     </ReactMarkdown>
                 </div>
 
