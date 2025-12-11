@@ -11,7 +11,7 @@ export default function Navbar() {
     const closeMenu = () => setIsOpen(false);
 
     return (
-        <nav className="bg-navy-900 text-white border-b border-white/10 sticky top-0 z-50">
+        <nav className="bg-industrial-900 text-white border-b border-white/10 sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo Section */}
@@ -31,7 +31,7 @@ export default function Navbar() {
                         <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link>
                         <Link
                             href="#newsletter"
-                            className="bg-primary hover:bg-orange-600 text-navy-900 font-bold px-4 py-2 rounded-lg transition-colors"
+                            className="bg-safety-500 hover:bg-safety-600 text-industrial-900 font-bold px-4 py-2 rounded-lg transition-colors"
                         >
                             Free Newsletter
                         </Link>
@@ -62,7 +62,7 @@ export default function Navbar() {
 
             {/* Mobile Menu Dropdown */}
             {isOpen && (
-                <div className="md:hidden bg-navy-900 border-t border-white/10">
+                <div className="md:hidden bg-industrial-900 border-t border-white/10">
                     <div className="px-4 pt-2 pb-4 space-y-1 sm:px-3 flex flex-col">
                         <Link
                             href="/blog"
@@ -88,7 +88,7 @@ export default function Navbar() {
                         <Link
                             href="#newsletter"
                             onClick={closeMenu}
-                            className="block px-3 py-3 mt-2 rounded-md text-base font-bold text-navy-900 bg-primary hover:bg-orange-600 text-center"
+                            className="block px-3 py-3 mt-2 rounded-md text-base font-bold text-industrial-900 bg-safety-500 hover:bg-safety-600 text-center"
                         >
                             Free Newsletter
                         </Link>

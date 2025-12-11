@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
 import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
@@ -8,11 +8,16 @@ import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#0F172A',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://tradepath-texas-1u6d.vercel.app'),
   title: 'TradePathUSA | Texas Trade School ROI Engine',
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
-  viewport: 'width=device-width, initial-scale=1',
 };
 
 export default function RootLayout({
@@ -22,7 +27,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} bg-background text-foreground antialiased font-sans`}>
+      <body className={`${inter.className} bg-industrial-100 text-industrial-900 antialiased font-sans`}>
         {/* NAV */}
         <Navbar />
 
@@ -32,7 +37,7 @@ export default function RootLayout({
         </main>
 
         {/* FOOTER */}
-        <footer className="bg-navy-900 text-secondary py-12 border-t border-white/10">
+        <footer className="bg-industrial-900 text-slate-200 py-12 border-t border-white/10">
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center md:text-left">
               <div className="md:col-span-2">
@@ -46,16 +51,16 @@ export default function RootLayout({
               <div>
                 <h3 className="text-slate-200 font-bold mb-4">Company</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="/about" className="hover:text-primary transition-colors">About</Link></li>
-                  <li><Link href="/contact" className="hover:text-primary transition-colors">Contact</Link></li>
+                  <li><Link href="/about" className="hover:text-safety-500 transition-colors">About</Link></li>
+                  <li><Link href="/contact" className="hover:text-safety-500 transition-colors">Contact</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h3 className="text-slate-200 font-bold mb-4">Legal</h3>
                 <ul className="space-y-2 text-sm">
-                  <li><Link href="/privacy" className="hover:text-primary transition-colors">Privacy Policy</Link></li>
-                  <li><Link href="/terms" className="hover:text-primary transition-colors">Terms of Service</Link></li>
+                  <li><Link href="/privacy" className="hover:text-safety-500 transition-colors">Privacy Policy</Link></li>
+                  <li><Link href="/terms" className="hover:text-safety-500 transition-colors">Terms of Service</Link></li>
                 </ul>
               </div>
             </div>

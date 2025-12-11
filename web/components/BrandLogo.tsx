@@ -3,7 +3,7 @@ import React from 'react';
 export default function BrandLogo() {
     return (
         <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="relative w-8 h-8 flex items-center justify-center bg-primary rounded-lg shadow-sm group-hover:scale-105 transition-transform duration-200 overflow-hidden">
+            <div className="relative w-8 h-8 flex items-center justify-center bg-safety-500 rounded-lg shadow-sm group-hover:scale-105 transition-transform duration-200 overflow-hidden">
                 {/* Gear Icon Background */}
                 <svg
                     viewBox="0 0 24 24"
@@ -12,7 +12,7 @@ export default function BrandLogo() {
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    className="w-6 h-6 text-navy-900 opacity-90"
+                    className="w-6 h-6 text-industrial-900 opacity-90"
                 >
                     <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
                     <circle cx="12" cy="12" r="7" />
@@ -26,7 +26,7 @@ export default function BrandLogo() {
                 </div>
             </div>
             <span className="text-xl font-black tracking-tight text-white group-hover:text-white transition-colors">
-                TRADE<span className="text-primary font-bold">PATH</span>
+                TRADE<span className="text-safety-500 font-bold">PATH</span>
             </span>
         </div>
     );
