@@ -5,25 +5,29 @@ const config: Config = {
         "./app/**/*.{js,ts,jsx,tsx,mdx}",
         "./pages/**/*.{js,ts,jsx,tsx,mdx}",
         "./components/**/*.{js,ts,jsx,tsx,mdx}",
-        "./utils/**/*.{js,ts,jsx,tsx,mdx}",
     ],
     theme: {
         extend: {
             colors: {
-                // The Critical Brand Palette
+                background: "var(--background)",
+                foreground: "var(--foreground)",
+                // THE RESTORED PALETTE
                 industrial: {
-                    900: '#0F172A', // Navy (Headers/Nav) - THIS WAS MISSING
-                    800: '#1E293B', // Card BG
-                    700: '#334155', // Borders
-                    100: '#F1F5F9', // Page BG
-                    50: '#F8FAFC',
+                    900: '#0F172A', // Hero & Header Background
+                    800: '#1E293B', // Dark Borders & Footer
+                    700: '#334155', // Subtext
+                    600: '#475569', // Muted Text
+                    500: '#64748B', // Icons
+                    200: '#E2E8F0', // Light Borders
+                    100: '#F1F5F9', // Page Background
+                    50: '#F8FAFC',  // Card Backgrounds
                 },
                 safety: {
-                    500: '#F59E0B', // Orange (Buttons)
-                    600: '#D97706',
+                    500: '#F59E0B', // Primary Orange Buttons
+                    600: '#D97706', // Button Hover
                 },
                 success: {
-                    500: '#10B981', // Green
+                    500: '#10B981', // ROI Green
                 }
             },
             fontFamily: {
@@ -32,14 +36,14 @@ const config: Config = {
             typography: {
                 DEFAULT: {
                     css: {
-                        maxWidth: 'none', // Prevents the blog from being too skinny
+                        maxWidth: '100ch', // Optimize reading width
                     },
                 },
             },
         },
     },
     plugins: [
-        require('@tailwindcss/typography'),
+        require('@tailwindcss/typography'), // Keeps the blog working
     ],
 };
 export default config;

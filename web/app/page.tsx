@@ -47,14 +47,14 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
   return (
     <div>
       {/* HERO SECTION */}
-      <section className="bg-navy-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
+      <section className="bg-industrial-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
         {/* Pattern Overlay */}
         <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 leading-tight">
             Blue Collar is the <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-orange-400 to-yellow-200">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 via-orange-400 to-yellow-200">
               New Gold Collar
             </span>
           </h1>
@@ -70,7 +70,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
       {/* DATA GRID */}
       <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20 pb-24">
         <h2 className="text-2xl font-bold text-white mb-2 drop-shadow-md flex items-center gap-2">
-          <span className="bg-primary w-2 h-8 rounded-full inline-block"></span>
+          <span className="bg-safety-500 w-2 h-8 rounded-full inline-block"></span>
           {headerTitle}
         </h2>
         <p className="text-xs text-slate-400 mb-8 ml-4">
@@ -86,12 +86,12 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {listings.map((school: any, i: number) => (
-              <div key={i} className="bg-white rounded-2xl shadow-xl border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl hover:border-primary/30 transition-all duration-300">
+              <div key={i} className="bg-white rounded-2xl shadow-xl border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl hover:border-safety-500/30 transition-all duration-300">
 
                 {/* Card Top: ROI Badge */}
-                <div className="bg-slate-50/80 backdrop-blur-sm px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                <div className="bg-industrial-50/80 backdrop-blur-sm px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. 1st Year ROI</span>
-                  <span className="text-success font-black text-xl tracking-tight">
+                  <span className="text-success-500 font-black text-xl tracking-tight">
                     +${school.calculated_roi?.toLocaleString()}
                   </span>
                 </div>
@@ -99,12 +99,12 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                 {/* Card Content */}
                 <div className="p-6 flex-grow">
                   {/* School Name */}
-                  <h3 className="text-lg font-bold text-navy-900 mb-2 leading-tight line-clamp-2">
+                  <h3 className="text-lg font-bold text-industrial-900 mb-2 leading-tight line-clamp-2">
                     {school.school_name}
                   </h3>
 
                   {/* Details: Program Name */}
-                  <p className="text-primary text-sm font-bold mb-4">{school.program_name}</p>
+                  <p className="text-safety-500 text-sm font-bold mb-4">{school.program_name}</p>
 
                   {/* Location with Fixed SVG Icon */}
                   <div className="text-sm text-secondary mb-6 flex items-start gap-1.5">
@@ -127,7 +127,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                     </div>
 
                     {/* Salary Block */}
-                    <div className="bg-slate-50 rounded-lg p-3 border border-slate-100 mt-2">
+                    <div className="bg-industrial-50 rounded-lg p-3 border border-slate-100 mt-2">
                       <div className="flex justify-between items-end">
                         <div className="flex flex-col gap-1">
                           <span className="text-[10px] font-bold text-slate-400 uppercase">Projected Salary</span>
@@ -136,7 +136,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                             Verify Gov Data
                           </a>
                         </div>
-                        <span className="text-2xl font-black text-navy-900 tracking-tight">
+                        <span className="text-2xl font-black text-industrial-900 tracking-tight">
                           ${school.projected_salary?.toLocaleString()}
                         </span>
                       </div>
@@ -145,11 +145,11 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                 </div>
 
                 {/* Footer Button */}
-                <div className="p-4 bg-slate-50 border-t border-slate-100">
+                <div className="p-4 bg-industrial-50 border-t border-slate-100">
                   <a
                     href={formatUrl(school.website) || '#'}
                     target="_blank"
-                    className="block w-full text-center bg-navy-900 text-white font-bold py-3 rounded-xl text-sm hover:text-primary transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
+                    className="block w-full text-center bg-industrial-900 text-white font-bold py-3 rounded-xl text-sm hover:text-safety-500 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
                   >
                     Visit School
                   </a>
@@ -161,21 +161,21 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
       </section>
 
       {/* BROWSE BY CITY SECTION */}
-      <section className="bg-slate-50 py-16 border-t border-slate-200 mt-24">
+      <section className="bg-industrial-50 py-16 border-t border-slate-200 mt-24">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-navy-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
+          <h2 className="text-2xl font-bold text-industrial-900 mb-8 text-center">Browse Texas Trade Programs by City</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Lubbock', 'Laredo', 'Midland'].map((city) => (
               <div key={city} className="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
-                <h3 className="font-bold text-lg text-navy-900 mb-4 border-b border-slate-100 pb-2">{city}</h3>
+                <h3 className="font-bold text-lg text-industrial-900 mb-4 border-b border-slate-100 pb-2">{city}</h3>
                 <div className="flex flex-col gap-2">
                   {['Welding', 'HVAC', 'Electrician', 'Plumbing', 'Mechanic'].map((trade) => (
                     <Link
                       key={trade}
                       href={`/local/${city.toLowerCase().replace(' ', '%20')}/${trade.toLowerCase().replace(' ', '-')}`}
-                      className="text-slate-500 hover:text-primary text-sm font-medium transition-colors flex items-center gap-2 group"
+                      className="text-slate-500 hover:text-safety-500 text-sm font-medium transition-colors flex items-center gap-2 group"
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-primary transition-colors"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-safety-500 transition-colors"></span>
                       {city} {trade} Schools
                     </Link>
                   ))}
