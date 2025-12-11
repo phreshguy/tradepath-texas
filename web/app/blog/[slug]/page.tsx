@@ -5,6 +5,17 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import type { Metadata } from 'next';
 
+// Helper to grab H2 headers for the TOC
+const getHeadings = (source: string) => {
+    const regex = /^##\s+(.*)$/gm;
+    const headings = [];
+    let match;
+    while ((match = regex.exec(source)) !== null) {
+        headings.push(match[1]);
+    }
+    return headings;
+};
+
 export const revalidate = 0;
 
 export async function generateMetadata(props: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -30,6 +41,8 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
         .replace(/^```markdown\s*/, '') // Remove top ```markdown
         .replace(/^```\s*/, '')         // Remove generic ```
         .replace(/```$/, '');            // Remove bottom ```
+
+    const headings = getHeadings(post.content_markdown);
 
     return (
         <main className="min-h-screen bg-white text-slate-900 font-sans">
@@ -65,8 +78,19 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                     <img
                         src={post.cover_image_url}
                         alt={post.title}
-                        className="w-full h-auto rounded-xl mb-12 shadow-lg border-4 border-white"
+                        className="w-full aspect-video object-cover rounded-xl shadow-lg mb-12 bg-gray-100"
                     />
+                )}
+
+                {headings.length > 0 && (
+                    <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 mb-10">
+                        <p className="font-bold text-industrial-900 mb-4 text-sm uppercase tracking-wide">Quick Navigation</p>
+                        <ul className="space-y-2 text-sm text-blue-600 underline">
+                            {headings.map((heading) => (
+                                <li key={heading}>{heading}</li>
+                            ))}
+                        </ul>
+                    </div>
                 )}
 
                 {/* CONTENT */}
@@ -82,9 +106,9 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
                 </div>
 
                 {/* BOTTOM CTA */}
-                <div className="mt-20 p-8 bg-industrial-900 text-white rounded-2xl text-center">
-                    <h3 className="text-2xl font-bold mb-3">Don't guess with your future.</h3>
-                    <p className="text-slate-400 mb-6">See verified trade programs and real salaries.</p>
+                <div className="mt-16 p-8 bg-slate-100 rounded-xl text-center border border-slate-200">
+                    <h3 className="text-2xl font-bold mb-3 text-slate-900">Don't guess with your future.</h3>
+                    <p className="text-slate-600 mb-6">See verified trade programs and real salaries.</p>
                     <Link href="/" className="inline-block bg-safety-500 text-industrial-900 font-bold py-3 px-8 rounded hover:bg-white transition">
                         Search Schools
                     </Link>
