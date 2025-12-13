@@ -25,8 +25,12 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
     const supabase = createClient();
     const { data } = await supabase.from('blog_posts').select('*').eq('slug', params.slug).single();
     if (!data) return {};
+
+    const isDraft = data.status !== 'published';
+    const title = isDraft ? `[DRAFT] ${data.title}` : data.title;
+
     return {
-        title: `${data.title} | TradePath Texas`,
+        title: `${title} | TradePath Texas`,
         description: data.excerpt
     };
 }
@@ -45,9 +49,15 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
         .replace(/```$/, '');            // Remove bottom ```
 
     const headings = getHeadings(post.content_markdown);
+    const isDraft = post.status !== 'published';
 
     return (
         <main className="min-h-screen bg-white text-slate-900 font-sans">
+            {isDraft && (
+                <div className="bg-yellow-400 text-yellow-900 px-4 py-2 text-center font-bold text-sm uppercase tracking-widest sticky top-0 z-50">
+                    Draft Preview Mode
+                </div>
+            )}
 
             {/* 1. DARK HEADER SECTION (Matches Screenshot) */}
             <header className="bg-industrial-900 text-white pt-24 md:pt-32 pb-12 md:pb-16 px-4 md:px-6">
@@ -65,7 +75,7 @@ export default async function BlogPost(props: { params: Promise<{ slug: string }
 
                     {/* METADATA */}
                     <div className="flex items-center justify-center gap-4 text-sm text-slate-400">
-                        <span>{new Date(post.published_at).toLocaleDateString()}</span>
+                        <span>{post.published_at ? new Date(post.published_at).toLocaleDateString() : 'Unpublished Draft'}</span>
                         <span>•</span>
                         <span>TradePath Editorial</span>
                     </div>
