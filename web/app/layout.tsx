@@ -18,6 +18,9 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://tradepath-texas-1u6d.vercel.app'),
   title: 'TradePathUSA | Texas Trade School ROI Engine',
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
+  verification: {
+    google: 'YOUR_GOOGLE_VERIFICATION_CODE', // TODO: Add your verification code here
+  },
 };
 
 export default function RootLayout({
