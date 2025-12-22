@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import Link from 'next/link';
+import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
 import BrandLogo from '@/components/BrandLogo';
@@ -70,6 +71,23 @@ export default function RootLayout({
           </div>
         </footer>
         <Analytics />
+        {/* Google Analytics */}
+        <Script
+          strategy="afterInteractive"
+          src="https://www.googletagmanager.com/gtag/js?id=G-3JLRJVD1GK"
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-3JLRJVD1GK');
+            `,
+          }}
+        />
       </body>
     </html>
   );
