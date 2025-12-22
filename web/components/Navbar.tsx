@@ -19,9 +19,7 @@ export default function Navbar() {
                         <Link href="/" onClick={closeMenu}>
                             <BrandLogo />
                         </Link>
-                        <span className="hidden sm:inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-white/10 text-white/70 uppercase tracking-widest border border-white/5">
-                            Texas Beta
-                        </span>
+
                     </div>
 
                     {/* Desktop Navigation */}
