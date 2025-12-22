@@ -15,7 +15,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://tradepath-texas-1u6d.vercel.app'),
+  metadataBase: new URL('https://tradepathusa.com'),
   title: 'TradePathUSA | Texas Trade School ROI Engine',
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
   verification: {

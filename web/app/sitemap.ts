@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next';
 import { createClientComponentClient } from '@/utils/supabase/client';
 
 // Base URL for the project
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://tradepath-texas-1u6d.vercel.app';
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://tradepathusa.com';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createClientComponentClient();
