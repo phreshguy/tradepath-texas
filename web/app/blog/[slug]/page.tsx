@@ -27,10 +27,12 @@ export async function generateMetadata(props: { params: Promise<{ slug: string }
     if (!data) return {};
 
     const isDraft = data.status !== 'published';
-    const title = isDraft ? `[DRAFT] ${data.title}` : data.title;
+    const baseTitle = isDraft ? `[DRAFT] ${data.title}` : data.title;
+    // If title is already long, truncate/use as is. If short, brand it.
+    const seoTitle = baseTitle.length > 55 ? baseTitle.substring(0, 65) : `${baseTitle} | TradePath`;
 
     return {
-        title: `${title} | TradePath Texas`,
+        title: seoTitle,
         description: data.excerpt
     };
 }

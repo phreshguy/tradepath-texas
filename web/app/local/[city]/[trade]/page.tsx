@@ -55,8 +55,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Format city for display (Capitalize first letters)
     const cityTitle = decodedCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
+    const baseTitle = `${cityTitle} ${displayTrade} Schools: 2025 Cost & Salary`;
+    const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
+
     return {
-        title: `Top Rated ${displayTrade} Schools in ${cityTitle}, TX (Salary & Cost) | TradePathUSA`,
+        title: seoTitle,
         description: `Compare verified outcomes for ${displayTrade} programs in ${cityTitle}. Avg salary: $55k+. Govt Verified Data.`,
     };
 }
