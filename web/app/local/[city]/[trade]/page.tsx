@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { SEO_YEAR } from '@/utils/date';
 import { notFound } from 'next/navigation';
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // Format city for display (Capitalize first letters)
     const cityTitle = decodedCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    const baseTitle = `${cityTitle} ${displayTrade} Schools: 2025 Cost & Salary`;
+    const baseTitle = `${cityTitle} ${displayTrade} Schools: ${SEO_YEAR} Cost & Salary`;
     const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
 
     return {

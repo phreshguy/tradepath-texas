@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/react';
 import { Inter } from 'next/font/google';
 import BrandLogo from '@/components/BrandLogo';
 import Navbar from '@/components/Navbar';
+import { CURRENT_YEAR, SEO_YEAR } from '@/utils/date';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -15,15 +16,17 @@ export const viewport: Viewport = {
   themeColor: '#0F172A',
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://tradepathusa.com'),
-  title: 'TradePathUSA | Texas Trade School ROI Engine',
-  description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
-  verification: {
-    google: 'wfZGhN4QWS2AX9H0MTLkSoQRAdaK8TgjMaOXi8nDaz0',
-    yandex: '327c1e753260492e',
-  },
-};
+export function generateMetadata(): Metadata {
+  return {
+    metadataBase: new URL('https://tradepathusa.com'),
+    title: 'TradePathUSA | Texas Trade School ROI Engine',
+    description: `Stop guessing. Start earning. Verify verified ${SEO_YEAR} trade school tuition vs salary data in Texas. Avoid debt and find high-ROI programs for Welding, HVAC, Electrician.`,
+    verification: {
+      google: 'wfZGhN4QWS2AX9H0MTLkSoQRAdaK8TgjMaOXi8nDaz0',
+      yandex: '327c1e753260492e',
+    },
+  };
+}
 
 export default function RootLayout({
   children,
@@ -46,7 +49,7 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-center md:text-left">
               <div className="md:col-span-2">
-                <p className="mb-4 text-lg font-semibold text-slate-200 tracking-tight">TradePathUSA.com &copy; 2025</p>
+                <p className="mb-4 text-lg font-semibold text-slate-200 tracking-tight">TradePathUSA.com &copy; {CURRENT_YEAR}</p>
                 <p className="text-sm opacity-60 max-w-md leading-relaxed mx-auto md:mx-0">
                   Data sourced directly from the U.S. Department of Education (CollegeScorecard) & Bureau of Labor Statistics (OEWS).
                   <br />TradePath is an independent resource and is not a government entity. Salaries are estimations for educational purposes.
