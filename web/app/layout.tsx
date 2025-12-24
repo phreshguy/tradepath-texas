@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   description: 'Stop guessing. Start earning. Verify trade school salaries with government data.',
   verification: {
     google: 'wfZGhN4QWS2AX9H0MTLkSoQRAdaK8TgjMaOXi8nDaz0',
+    yandex: '327c1e753260492e',
   },
 };
 
