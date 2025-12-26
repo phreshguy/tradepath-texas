@@ -1,68 +1,93 @@
-# TradePathUSA Technical Architecture
+# TradePath Technical Architecture
 
-## 1. Project Mission
+## 1. HIGH-LEVEL OVERVIEW
 
-**TradePathUSA** is a **Texas Trade School ROI Engine**. Its core mission is to empower blue-collar students by providing verified government data on the "1st Year ROI" of trade programs. It counters the "4-year degree only" narrative by highlighting lucrative vocational paths (HVAC, Welding, etc.).
+**Mission:** Data-backed Trade School ROI Engine + Automated Media Publication.
 
-## 2. Technology Stack
+**Stack:**
 
-- **Framework**: Next.js 16 (App Router)
-- **Styling**: Tailwind CSS (Industrial Theme: Navy 900 / Safety Orange)
-- **Database**: Supabase (PostgreSQL)
-- **Deployment**: Vercel
-- **Language**: TypeScript
+- **Frontend:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS (Industrial Navy Theme)
+- **Database:** Supabase (PostgreSQL)
+- **Automation:** n8n
+- **Hosting:** Vercel
 
-## 3. Database Map (Supabase)
-
-The application relies on 5 core tables and 1 logical view.
+## 2. DATABASE SCHEMA (Supabase)
 
 ### Tables
 
-1. **`schools`**: Verified institutions (Name, City, Website). Source: CollegeScorecard.
-2. **`programs`**: Specific offerings (e.g., "Welding Technology") linked to schools. Contains Tuition & Length. Source: CollegeScorecard.
-3. **`bls_salary_data`**: Median annual wages for SOC (Standard Occupational Classification) codes in Texas. Source: BLS OEWS.
-4. **`cip_soc_matrix`**: The "Rosetta Stone" mapping educational programs (CIP codes) to careers (SOC codes).
-5. **`blog_posts`**: Content engine for articles.
-   - Columns: `id, slug, title, content_markdown, status, meta_description, target_keywords`
+- **schools**: Core school data.
+- **programs**: Tuition and program lengths.
+- **bls_salary_data**: Gov source for wages.
+- **cip_soc_matrix**: The handshake link.
+- **blog_posts**: CMS table.
+  - Calls: `title`, `slug`, `content_markdown`, `status` [draft/published], `cover_image_url`.
+- **content_ideas**: n8n War Room.
+  - Cols: `topic_title`, `target_keyword`, `status` [pending/processing/completed], `angle`.
 
-### Views
+### Critical View
 
-- **`verified_roi_listings`**: A master view that joins Schools + Programs + Wages.
-  - Logic: `(Median Salary - Tuition) = Calculated ROI`.
-  - Used by the Frontend to display the "Top Rated Scools" grid.
+- **verified_roi_listings**: Joins schools to wages + adds buckets logic.
 
-## 4. Programmatic SEO (pSEO) Strategy
+### Functions
 
-We capture long-tail traffic via dynamic landing pages.
+- **get_and_lock_next_idea()**: RPC function for n8n atomic locking.
 
-- **Route**: `/local/[city]/[trade]`
-- **Example**: `/local/houston/hvac`
-- **Logic**:
-  1. Accepts `city` and `trade` params.
-  2. Maps simple trade slugs (e.g., `hvac`) to database categories (e.g., `Mechanic/Repair Tech`).
-  3. Queries `verified_roi_listings` for schools in that city + category.
-  4. Renders a keyword-rich H1 and Metadata title.
-  5. **Smart Fallback**: If no specific matches found, shows the broader category for the city to prevent empty pages.
+## 3. N8N AUTOMATION ARCHITECTURE
 
-## 5. Environment Variables
+### Workflow A (The Scout)
 
-Keys required in `.env.local`:
+- **Frequency:** Runs weekly.
+- **Action:** Scrapes RSS (News/Reddit) -> AI Strategist (Filters & Scores) -> Saves to `content_ideas`.
 
-- `NEXT_PUBLIC_SUPABASE_URL`: Connection string.
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Public API key.
-- `DATABASE_URL`: Direct Postgres connection (for migration scripts).
+### Workflow B (The Factory)
 
-## 6. Deployment Settings (Vercel)
+- **Frequency:** Runs hourly.
+- **Logic:** Polls `content_ideas` for 'pending' -> Locks topic -> Research (Serper + Tavily) -> Cross-checks Internal Data -> AI Writer (DeepSeek/Gemini) -> Auto-formats (Markdown) -> Saves to `blog_posts` (Draft) -> Notifies Telegram.
 
-- **Root Directory**: `web`
-- **Build Command**: `next build`
-- **Output Directory**: `.next`
-- **Install Command**: `npm install`
-- **Framework Preset**: Next.js
+## 4. FRONTEND STRUCTURE (/web)
 
-## 7. Future Automation (n8n)
+### pSEO
 
-The `blog_posts` table is prepped for AI Automation.
+- `web/app/local/[city]/[trade]/page.tsx` (Dynamic Landing Pages).
 
-- **Trigger**: n8n watches for new rows or status changes.
-- **Action**: AI writes content to `content_markdown` and sets status to `draft` for review.
+### Blog
+
+- `web/app/blog/[slug]/page.tsx` (Static Generated w/ Revalidation).
+- Uses `react-markdown` + `remark-gfm` + typography plugin for "White Paper" rendering.
+
+### Components
+
+- **Navbar:** Client Component for Mobile menu.
+- **SearchInput:** Core search component.
+
+## 5. SEO STRATEGY
+
+**Sitemap:**
+
+- Dynamic generation in `sitemap.ts` (combines static routes + database blogs + city/trade permutations).
+
+**Metadata:**
+
+- Dynamic year logic (`SEO_YEAR` constant).
+
+**Analytics:**
+
+- Google Analytics 4 (`next/script`) + Vercel Analytics.
+
+**Verification:**
+
+- Google + Yandex ownership tags in layout.
+
+## 6. ENVIRONMENT VARIABLES
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_BASE_URL`
+- `BLS_API_KEY`
+- `OPENAI_API_KEY`
+- `SERPER_API_KEY`
+- `TAVILY_API_KEY`
+- `TELEGRAM_BOT_TOKEN`
+- `TELEGRAM_CHAT_ID`
