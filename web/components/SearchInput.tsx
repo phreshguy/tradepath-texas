@@ -1,18 +1,17 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const trades = [
-    { label: "All Trades", value: "" },
-    { label: "Welding Technology", value: "Welding Technology" },
-    { label: "HVAC/R Technician", value: "HVAC/R Technician" },
-    { label: "Electrician & Power Systems", value: "Electrician & Power Systems" },
-    { label: "Plumbing & Pipefitting", value: "Plumbing & Pipefitting" },
-    { label: "Automotive Service Tech", value: "Automotive Service Tech" },
-    { label: "Diesel & Heavy Equipment", value: "Diesel & Heavy Equipment" },
-    { label: "Carpentry & Construction", value: "Carpentry & Construction" },
-    { label: "CNC Machining & Fabrication", value: "CNC Machining & Fabrication" },
+    "Welding Technology",
+    "HVAC/R Technician",
+    "Electrician & Power Systems",
+    "Plumbing & Pipefitting",
+    "Automotive Service Tech",
+    "Diesel & Heavy Equipment",
+    "Carpentry & Construction",
+    "CNC Machining & Fabrication",
 ];
 
 export default function SearchInput() {
@@ -21,24 +20,11 @@ export default function SearchInput() {
 
     const [trade, setTrade] = useState("");
     const [city, setCity] = useState("");
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setTrade(searchParams.get("trade") || "");
         setCity(searchParams.get("q") || searchParams.get("city") || "");
     }, [searchParams]);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
 
     const handleSearch = () => {
         const cityValue = city.trim();
@@ -47,6 +33,7 @@ export default function SearchInput() {
         if (cityValue) params.set("q", cityValue);
         if (trade && trade !== "") params.set("trade", trade);
 
+        // Routing logic: Always send to global search
         if (params.toString()) {
             router.push(`/search?${params.toString()}`);
         } else {
@@ -60,81 +47,73 @@ export default function SearchInput() {
         }
     };
 
-    const selectedTradeLabel = trades.find(t => t.value === trade)?.label || "All Trades";
-
     return (
-        <div className="bg-white p-2 rounded-2xl max-w-3xl mx-auto flex flex-col md:flex-row gap-2 shadow-2xl border border-slate-200/60 transition-all duration-300">
+        <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] p-4 sm:p-5 max-w-4xl mx-auto border border-slate-100 relative z-30">
+            <div className="flex flex-col md:flex-row gap-4">
 
-            {/* Input 1: Custom Trade Dropdown */}
-            <div className="relative md:w-2/5" ref={dropdownRef}>
-                <button
-                    type="button"
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="w-full h-full px-5 py-4 text-left flex justify-between items-center bg-slate-50 hover:bg-white border border-transparent focus:border-industrial-900 rounded-xl transition-all duration-200 group"
-                >
-                    <div className="flex flex-col">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Category</span>
-                        <span className="text-industrial-900 font-bold truncate leading-none">
-                            {selectedTradeLabel}
-                        </span>
+                {/* Trade Selector */}
+                <div className="flex-1 relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-safety-600 transition-colors pointer-events-none z-10">
+                        {/* Wrench Icon (lucide-style) */}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z" /></svg>
                     </div>
-                    <svg
-                        className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-safety-600' : ''}`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                    <select
+                        value={trade}
+                        onChange={(e) => setTrade(e.target.value)}
+                        className="w-full h-14 pl-12 pr-10 text-industrial-900 bg-slate-50 border border-slate-200 rounded-xl outline-none appearance-none focus:ring-2 focus:ring-safety-500 focus:border-transparent focus:bg-white transition-all font-bold cursor-pointer"
                     >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
-                    </svg>
-                </button>
-
-                {/* Dropdown Menu */}
-                {isOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-3 z-50 max-h-[400px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200">
-                        {trades.map((item) => (
-                            <button
-                                key={item.label}
-                                onClick={() => {
-                                    setTrade(item.value);
-                                    setIsOpen(false);
-                                }}
-                                className={`w-full px-6 py-3 text-left hover:bg-industrial-50 flex items-center gap-3 transition-colors ${trade === item.value ? 'bg-industrial-50 text-safety-600 font-bold' : 'text-industrial-700 font-medium'}`}
-                            >
-                                <span className={`w-2 h-2 rounded-full ${trade === item.value ? 'bg-safety-500 shadow-[0_0_8px_rgba(234,179,8,0.6)]' : 'bg-slate-200'}`}></span>
-                                {item.label}
-                            </button>
+                        <option value="">All Trades</option>
+                        {trades.map((t) => (
+                            <option key={t} value={t}>{t}</option>
                         ))}
-                    </div>
-                )}
-            </div>
-
-            {/* Input 2: City Input */}
-            <div className="flex-grow md:w-3/5">
-                <div className="relative h-full flex items-center">
-                    <div className="w-full h-full px-5 py-4 bg-slate-50 border border-transparent focus-within:border-industrial-900 focus-within:bg-white rounded-xl transition-all duration-200 flex flex-col justify-center">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5 leading-none">Location or Keywords</span>
-                        <input
-                            type="text"
-                            placeholder="e.g. Dallas, Welding, UTI..."
-                            value={city}
-                            onChange={(e) => setCity(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                            className="bg-transparent text-industrial-900 font-bold outline-none w-full placeholder:text-slate-300 leading-tight"
-                        />
+                    </select>
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6" /></svg>
                     </div>
                 </div>
+
+                {/* City/Keyword Input */}
+                <div className="flex-[1.2] relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-safety-600 transition-colors pointer-events-none z-10">
+                        {/* Search Icon (lucide-style) */}
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+                    </div>
+                    <input
+                        type="text"
+                        placeholder="City, school, or keyword..."
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="w-full h-14 pl-12 pr-4 text-industrial-900 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-safety-500 focus:border-transparent focus:bg-white transition-all font-bold placeholder:text-slate-400"
+                    />
+                </div>
+
+                {/* CTA Button */}
+                <button
+                    onClick={handleSearch}
+                    className="h-14 bg-safety-500 text-industrial-900 font-extrabold px-8 rounded-xl hover:bg-safety-600 transition-all shadow-lg hover:shadow-safety-500/20 active:scale-95 flex items-center justify-center gap-2 whitespace-nowrap min-w-[180px]"
+                >
+                    <span className="uppercase tracking-[1px] text-sm">Find Training</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="group-hover:translate-x-1 transition-transform"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+                </button>
             </div>
 
-            {/* Action: Search Button */}
-            <button
-                onClick={handleSearch}
-                className="bg-industrial-900 text-white font-black px-10 py-4 rounded-xl hover:bg-safety-500 hover:text-industrial-900 transition-all duration-300 shadow-xl shadow-industrial-900/10 flex items-center justify-center gap-2 group active:scale-[0.98]"
-            >
-                <span className="uppercase tracking-widest text-sm">Find Programs</span>
-                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-            </button>
+            {/* Quick Filter Labels (Bonus for CX) */}
+            <div className="mt-4 flex flex-wrap gap-2 px-1">
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center mr-2">Popular:</span>
+                {["Welding", "HVAC", "CDL", "Electrician"].map((tag) => (
+                    <button
+                        key={tag}
+                        onClick={() => {
+                            setCity(tag);
+                            handleSearch();
+                        }}
+                        className="text-[10px] font-bold text-slate-500 hover:text-safety-600 transition-colors uppercase tracking-wider"
+                    >
+                        #{tag}
+                    </button>
+                ))}
+            </div>
         </div>
     );
 }
