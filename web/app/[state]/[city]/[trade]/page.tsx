@@ -118,6 +118,8 @@ export default async function Page({ params }: Props) {
                         <span className="mx-2">/</span>
                         <Link href={`/${state.toLowerCase()}`} className="text-safety-500 hover:text-white transition-colors">{stateUpper}</Link>
                         <span className="mx-2">/</span>
+                        <Link href={`/${state.toLowerCase()}/${city}`} className="text-safety-500 hover:text-white transition-colors">{cityTitle}</Link>
+                        <span className="mx-2">/</span>
                         <span className="text-white">{displayTrade}</span>
                     </div>
 

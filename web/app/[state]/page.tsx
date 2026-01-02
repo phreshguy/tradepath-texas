@@ -105,7 +105,7 @@ export default async function StatePage({ params }: Props) {
                             {stateCities.map((city: string) => (
                                 <Link
                                     key={city}
-                                    href={`/${state.toLowerCase()}/${slugify(city)}/welding`}
+                                    href={`/${state.toLowerCase()}/${slugify(city)}`}
                                     className="bg-industrial-100 hover:bg-safety-500 hover:text-industrial-900 text-industrial-700 px-4 py-2 rounded-full text-sm font-medium transition-all"
                                 >
                                     {city}
