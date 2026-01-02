@@ -23,10 +23,17 @@ const formatUrl = (url: string | null) => {
     return `https://${url}`;
 };
 
+// Formatting helper for O*NET
+const getOnetUrl = (code: string | null | undefined) => {
+    if (!code) return "https://www.bls.gov/ooh/";
+    // Append .00 if missing (BLS data usually comes without decimals)
+    const cleanCode = code.trim();
+    const formattedCode = cleanCode.includes('.') ? cleanCode : `${cleanCode}.00`;
+    return `https://www.onetonline.org/link/summary/${formattedCode}`;
+};
+
 export default function ListingCard({ school }: ListingCardProps) {
-    const govDataUrl = school.soc_code
-        ? `https://www.onetonline.org/link/summary/${school.soc_code}`
-        : "https://www.bls.gov/ooh/";
+    const govDataUrl = getOnetUrl(school.soc_code);
 
     return (
         <div className="bg-white rounded-xl shadow-lg border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl transition-all duration-300">
