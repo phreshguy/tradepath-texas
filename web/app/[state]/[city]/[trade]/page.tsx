@@ -15,34 +15,40 @@ type Props = {
 
 // Dictionary mapping specific slugs to Database Categories
 const categoryMap: Record<string, string> = {
-    'mechanic': 'Mechanic/Repair Tech',
-    'hvac': 'Mechanic/Repair Tech',
-    'auto-body': 'Mechanic/Repair Tech',
-    'construction': 'Construction Trade',
-    'electrician': 'Construction Trade',
-    'plumbing': 'Construction Trade',
-    'precision': 'Precision Production',
-    'welding': 'Precision Production',
-    'machinist': 'Precision Production',
+    'welding-technology': 'Welding Technology',
+    'hvac-r-technician': 'HVAC/R Technician',
+    'electrician-power-systems': 'Electrician & Power Systems',
+    'plumbing-pipefitting': 'Plumbing & Pipefitting',
+    'automotive-service-tech': 'Automotive Service Tech',
+    'diesel-heavy-equipment': 'Diesel & Heavy Equipment',
+    'carpentry-construction': 'Carpentry & Construction',
+    'cnc-machining-fabrication': 'CNC Machining & Fabrication',
+    // Fallbacks for old slugs if they exist in legacy index
+    'welding': 'Welding Technology',
+    'hvac': 'HVAC/R Technician',
+    'mechanic': 'Automotive Service Tech',
+    'construction': 'Carpentry & Construction',
+    'electrician': 'Electrician & Power Systems',
 };
 
 function formatTradeTitle(slug: string): string {
     const s = slug.toLowerCase();
     if (s === 'hvac') return 'HVAC';
-    if (s === 'hvacr') return 'HVAC-R';
-    return s.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    if (s === 'hvac-r-technician') return 'HVAC/R';
+    return s.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { state, city, trade: tradeSlug } = await params;
-    if (!categoryMap[tradeSlug.toLowerCase()]) return { title: 'Not Found' };
+    const cleanSlug = tradeSlug.toLowerCase();
+    if (!categoryMap[cleanSlug]) return { title: 'Not Found' };
 
-    const displayTrade = formatTradeTitle(decodeURIComponent(tradeSlug));
+    const displayTrade = categoryMap[cleanSlug];
     const decodedCity = decodeURIComponent(city);
     const decodedState = decodeURIComponent(state).toUpperCase();
     const cityTitle = decodedCity.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    const baseTitle = `${cityTitle} ${decodedState} ${displayTrade} Schools: ${SEO_YEAR} Cost & Salary`;
+    const baseTitle = `Best ${displayTrade} Schools in ${cityTitle}, ${decodedState}`;
     const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
 
     return {
@@ -61,45 +67,32 @@ export default async function Page({ params }: Props) {
 
     const decodedCity = decodeURIComponent(city).replace(/-/g, ' ');
     const cityTitle = decodedCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-    const displayTrade = formatTradeTitle(decodeURIComponent(tradeSlug));
+    const displayTrade = mappedCategory;
 
     const supabase = createClient();
 
-    // Step A: Fetch listings for specific City + State + Trade
-    let query = supabase
+    // Step A: Fetch listings for specific City + State + Category
+    const { data: cityListings } = await supabase
         .from('verified_roi_listings')
         .select('*')
         .ilike('state', stateUpper)
         .ilike('city', `%${decodedCity}%`)
+        .eq('display_category', mappedCategory)
         .order('calculated_roi', { ascending: false });
 
-    const isSpecificSearch = cleanSlug !== 'mechanic' && cleanSlug !== 'construction' && cleanSlug !== 'precision';
-    if (isSpecificSearch) {
-        query = query.ilike('program_name', `%${cleanSlug}%`);
-    } else {
-        query = query.ilike('program_name', `%${mappedCategory}%`);
-    }
-
-    const { data: cityListings } = await query;
     let listings = cityListings || [];
     let isFallback = false;
 
     // Step B (Fallback): If Step A returns 0 results, fetch State + Trade
     if (listings.length === 0) {
-        let fallbackQuery = supabase
+        const { data: stateListings } = await supabase
             .from('verified_roi_listings')
             .select('*')
             .ilike('state', stateUpper)
+            .eq('display_category', mappedCategory)
             .order('calculated_roi', { ascending: false })
             .limit(10);
 
-        if (isSpecificSearch) {
-            fallbackQuery = fallbackQuery.ilike('program_name', `%${cleanSlug}%`);
-        } else {
-            fallbackQuery = fallbackQuery.ilike('program_name', `%${mappedCategory}%`);
-        }
-
-        const { data: stateListings } = await fallbackQuery;
         if (stateListings && stateListings.length > 0) {
             listings = stateListings;
             isFallback = true;

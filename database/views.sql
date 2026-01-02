@@ -18,15 +18,22 @@ select s.name as school_name,
     b.soc_title,
     b.soc_code,
     CASE
-        WHEN b.soc_code LIKE '47%' THEN 'Construction Trade'
-        WHEN b.soc_code LIKE '49%' THEN 'Mechanic/Repair Tech'
-        WHEN b.soc_code LIKE '51%' THEN 'Precision Production'
+        WHEN b.soc_code LIKE '51-412%' THEN 'Welding Technology'
+        WHEN b.soc_code LIKE '49-902%' THEN 'HVAC/R Technician'
+        WHEN b.soc_code LIKE '47-211%' THEN 'Electrician & Power Systems'
+        WHEN b.soc_code LIKE '47-215%' THEN 'Plumbing & Pipefitting'
+        WHEN b.soc_code LIKE '49-302%' THEN 'Automotive Service Tech'
+        WHEN b.soc_code LIKE '49-303%' THEN 'Diesel & Heavy Equipment'
+        WHEN b.soc_code LIKE '47-203%'
+        OR b.soc_code LIKE '47-206%' THEN 'Carpentry & Construction'
+        WHEN b.soc_code LIKE '51-404%'
+        OR b.soc_code LIKE '51-916%' THEN 'CNC Machining & Fabrication'
         ELSE 'Other'
     END as display_category
 from programs p
     join schools s on p.school_id = s.id
     join cip_soc_matrix csm on p.cip_code = csm.cip_code
-    join bls_salary_data b on csm.soc_code = b.soc_code -- MATCHING STATE: Wages must match School State
+    join bls_salary_data b on csm.soc_code = b.soc_code
 where b.state_abbr = s.state
     and b.median_annual_salary is not null
 order by (
@@ -42,15 +49,16 @@ create or replace function get_seo_combinations() returns table (
 select distinct city,
     state,
     CASE
-        WHEN display_category = 'Construction Trade' THEN 'construction'
-        WHEN display_category = 'Mechanic/Repair Tech' THEN 'mechanic'
-        WHEN display_category = 'Precision Production' THEN 'precision'
+        WHEN display_category = 'Welding Technology' THEN 'welding-technology'
+        WHEN display_category = 'HVAC/R Technician' THEN 'hvac-r-technician'
+        WHEN display_category = 'Electrician & Power Systems' THEN 'electrician-power-systems'
+        WHEN display_category = 'Plumbing & Pipefitting' THEN 'plumbing-pipefitting'
+        WHEN display_category = 'Automotive Service Tech' THEN 'automotive-service-tech'
+        WHEN display_category = 'Diesel & Heavy Equipment' THEN 'diesel-heavy-equipment'
+        WHEN display_category = 'Carpentry & Construction' THEN 'carpentry-construction'
+        WHEN display_category = 'CNC Machining & Fabrication' THEN 'cnc-machining-fabrication'
         ELSE 'other'
     END as trade
 from verified_roi_listings
-where display_category IN (
-        'Construction Trade',
-        'Mechanic/Repair Tech',
-        'Precision Production'
-    );
+where display_category != 'Other';
 $$;
