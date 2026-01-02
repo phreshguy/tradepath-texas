@@ -1,5 +1,7 @@
 import { MetadataRoute } from 'next';
 import { createClientComponentClient } from '@/utils/supabase/client';
+import { slugify } from '@/utils/slugify';
+import { STATE_MAP } from '@/utils/states';
 
 // Base URL for the project
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || 'https://tradepathusa.com';
@@ -8,8 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const supabase = createClientComponentClient();
 
     // 1. Static Routes
-    const routes = [
+    const staticRoutes = [
         '',
+        '/search',
         '/blog',
         '/about',
         '/contact',
@@ -22,7 +25,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 1.0,
     }));
 
-    // 2. Fetch Dynamic Blog Posts
+    // 2. State Routes (e.g., /tx, /fl)
+    const stateRoutes = Object.keys(STATE_MAP).map((abbr) => ({
+        url: `${BASE_URL}/${abbr.toLowerCase()}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly' as const,
+        priority: 0.9,
+    }));
+
+    // 3. Dynamic Blog Posts
     const { data: posts } = await supabase
         .from('blog_posts')
         .select('slug, published_at')
@@ -35,36 +46,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }));
 
-    // 3. Fetch pSEO Combinations (Distinct State + City + Category pairs)
+    // 4. City Hubs and pSEO Niche Pages
     const { data: seoPages } = await supabase
         .rpc('get_seo_combinations');
 
-    // fallback pSEO logic
-    // If RPC fails or is empty, we default to TX cities for now
-    const cities = ['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth'];
-    const trades = ['mechanic', 'construction', 'precision'];
-    const defaultState = 'tx';
-
     let pSEORoutes: MetadataRoute.Sitemap = [];
+    let cityHubRoutes: MetadataRoute.Sitemap = [];
 
     if (seoPages && seoPages.length > 0) {
-        pSEORoutes = seoPages.map((page: any) => ({
-            // New URL Structure: /state/city/trade
-            url: `${BASE_URL}/${page.state.toLowerCase()}/${page.city.toLowerCase().replace(' ', '-')}/${page.trade}`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.9,
-        }));
-    } else {
-        pSEORoutes = cities.flatMap(city =>
-            trades.map(trade => ({
-                url: `${BASE_URL}/${defaultState}/${city.toLowerCase().replace(' ', '-')}/${trade}`,
+        // Create City Hubs (/[state]/[city])
+        const uniqueCityKeys = Array.from(new Set(seoPages.map((p: any) => `${p.state.toLowerCase()}|${p.city}`))) as string[];
+        cityHubRoutes = uniqueCityKeys.map((key) => {
+            const [state, city] = key.split('|');
+            return {
+                url: `${BASE_URL}/${state}/${slugify(city)}`,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
-                priority: 0.9,
-            }))
-        );
+                priority: 0.8,
+            };
+        });
+
+        // Create niche pages (/[state]/[city]/[trade])
+        pSEORoutes = seoPages.map((page: any) => ({
+            url: `${BASE_URL}/${page.state.toLowerCase()}/${slugify(page.city)}/${page.trade}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.7,
+        }));
     }
 
-    return [...routes, ...blogRoutes, ...pSEORoutes];
+    return [...staticRoutes, ...stateRoutes, ...blogRoutes, ...cityHubRoutes, ...pSEORoutes];
 }
+
