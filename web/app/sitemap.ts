@@ -35,20 +35,22 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.8,
     }));
 
-    // 3. Fetch pSEO Combinations (Distinct City + Category pairs)
-    // We pull distinct combinations to ensure we don't index empty pages
+    // 3. Fetch pSEO Combinations (Distinct State + City + Category pairs)
     const { data: seoPages } = await supabase
         .rpc('get_seo_combinations');
 
-    // fallback pSEO logic (Cities x Trades)
-    const cities = ['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth', 'El Paso', 'Arlington', 'Corpus Christi', 'Plano', 'Lubbock'];
+    // fallback pSEO logic
+    // If RPC fails or is empty, we default to TX cities for now
+    const cities = ['Houston', 'Dallas', 'San Antonio', 'Austin', 'Fort Worth'];
     const trades = ['mechanic', 'construction', 'precision'];
+    const defaultState = 'tx';
 
     let pSEORoutes: MetadataRoute.Sitemap = [];
 
     if (seoPages && seoPages.length > 0) {
         pSEORoutes = seoPages.map((page: any) => ({
-            url: `${BASE_URL}/local/${page.city.toLowerCase().replace(' ', '-')}/${page.trade}`,
+            // New URL Structure: /state/city/trade
+            url: `${BASE_URL}/${page.state.toLowerCase()}/${page.city.toLowerCase().replace(' ', '-')}/${page.trade}`,
             lastModified: new Date(),
             changeFrequency: 'weekly' as const,
             priority: 0.9,
@@ -56,7 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     } else {
         pSEORoutes = cities.flatMap(city =>
             trades.map(trade => ({
-                url: `${BASE_URL}/local/${city.toLowerCase().replace(' ', '-')}/${trade}`,
+                url: `${BASE_URL}/${defaultState}/${city.toLowerCase().replace(' ', '-')}/${trade}`,
                 lastModified: new Date(),
                 changeFrequency: 'weekly' as const,
                 priority: 0.9,

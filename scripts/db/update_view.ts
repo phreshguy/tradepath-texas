@@ -5,7 +5,10 @@ import fs from 'fs';
 import path from 'path';
 
 // Load env vars
-dotenv.config();
+// Load env vars explicitly from root
+const envPath = path.join(process.cwd(), '.env');
+console.log("Loading .env from:", envPath);
+dotenv.config({ path: envPath });
 
 async function run() {
     console.log("Available Env Keys:", Object.keys(process.env).filter(k => !k.includes('KEY') && !k.includes('SECRET')));

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import BrandLogo from './BrandLogo';
+import StateMenu, { MobileStateList } from './StateMenu';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -24,6 +25,7 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium">
+                        <StateMenu />
                         <Link href="/blog" className="text-slate-300 hover:text-white transition-colors">Blog</Link>
                         <Link href="/about" className="text-slate-300 hover:text-white transition-colors">About</Link>
                         <Link href="/contact" className="text-slate-300 hover:text-white transition-colors">Contact</Link>
@@ -83,6 +85,7 @@ export default function Navbar() {
                         >
                             Contact
                         </Link>
+                        <MobileStateList onClose={closeMenu} />
                         <Link
                             href="#newsletter"
                             onClick={closeMenu}

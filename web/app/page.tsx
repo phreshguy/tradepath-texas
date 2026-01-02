@@ -1,6 +1,7 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import SearchInput from '@/components/SearchInput';
+import { slugify } from '@/utils/slugify';
 
 export const dynamic = 'force-dynamic';
 
@@ -174,7 +175,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
                   {['Welding', 'HVAC', 'Electrician', 'Plumbing', 'Mechanic'].map((trade) => (
                     <Link
                       key={trade}
-                      href={`/local/${city.toLowerCase().replace(' ', '%20')}/${trade.toLowerCase().replace(' ', '-')}`}
+                      href={`/tx/${slugify(city)}/${slugify(trade)}`}
                       className="text-slate-500 hover:text-safety-500 text-sm font-medium transition-colors flex items-center gap-2 group"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover:bg-safety-500 transition-colors"></span>

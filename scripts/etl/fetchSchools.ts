@@ -1,78 +1,75 @@
-
 import 'dotenv/config';
 import { createClient } from '@supabase/supabase-js';
 import axios from 'axios';
 
+// --- CONFIG ---
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const apiKey = process.env.DATA_GOV_API_KEY;
 
 if (!supabaseUrl || !supabaseKey || !apiKey) {
-    throw new Error('Missing configuration.');
+    throw new Error('Missing configuration: Check .env file for Supabase/API Keys.');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// "The Big Three" Trades: Construction (46), Mechanic (47), Precision/Industrial (48)
 const TARGET_FAMILIES = ['46', '47', '48'];
 const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools.json';
 
 async function fetchSchools() {
-    console.log('Fetching ALL Texas schools (Debugging)...');
+    console.log('🚀 Starting NATIONAL School Ingestion (Safe Mode)...');
 
     let page = 0;
-    let totalPages = 1;
     const perPage = 100;
-    let totalTxSchools = 0;
-    let tradeSchoolsRetained = 0;
+    let schoolsProcessed = 0;
+    let schoolsInserted = 0;
+    let programsInserted = 0;
+    let hasMore = true;
 
-    while (page < totalPages) {
-        console.log(`Fetching page ${page} (per_page=${perPage})...`);
+    while (hasMore) {
         try {
+            console.log(`📡 Fetching Page ${page} (Offset ${page * perPage})...`);
+
             const response = await axios.get(BASE_URL, {
                 params: {
                     api_key: apiKey,
-                    'school.state': 'TX',
-                    fields: 'id,school.name,latest.programs.cip_4_digit,school.city,school.zip,school.accreditation,school.school_url',
+                    // Request specific fields including tuition
+                    fields: 'id,school.name,latest.programs.cip_4_digit,school.city,school.zip,school.accreditation,school.school_url,school.state,latest.cost.tuition.in_state',
                     per_page: perPage,
-                    page: page
+                    page: page,
+                    'school.operating': 1 // Only open schools
                 }
             });
 
-            const data = response.data;
-            const metadata = data.metadata;
-            if (metadata) {
-                const total = metadata.total;
-                totalPages = Math.ceil(total / perPage);
+            const results = response.data.results || [];
+
+            if (results.length === 0) {
+                console.log('✅ Reached end of data results.');
+                hasMore = false;
+                break;
             }
 
-            const results = data.results || [];
-            totalTxSchools += results.length;
-            // console.log(`Page ${page}: Received ${results.length} schools.`);
-
+            // SEQUENTIAL PROCESSING (Normal Route for reliability)
             for (const school of results) {
+                schoolsProcessed++;
+
                 const programsMap = school['latest.programs.cip_4_digit'];
-                // ProgramsMap keys are the CIP codes.
                 if (!programsMap) continue;
 
                 const programCodes = Object.keys(programsMap);
-
-                // Filter In Memory: Check families 46, 47, 48
-                const relevantCodes = programCodes.filter(code => {
-                    // CIP codes often come as "4805" or "48.05".
-                    // We check if it starts with "46", "47", "48".
-                    // This covers "46xx", "46.xx".
-                    return TARGET_FAMILIES.some(fam => code.startsWith(fam));
-                });
+                const relevantCodes = programCodes.filter(code =>
+                    TARGET_FAMILIES.some(fam => code.startsWith(fam))
+                );
 
                 if (relevantCodes.length > 0) {
-                    tradeSchoolsRetained++;
+                    const schoolName = school['school.name'] || 'Unknown School';
+                    const schoolZip = (school['school.zip'] || '00000').substring(0, 5);
+                    const schoolState = (school['school.state'] || 'US').toUpperCase();
+                    const tuition = school['latest.cost.tuition.in_state'] || 0;
 
-                    // Clean undefined values
-                    const schoolName = school['school.name'] || 'Unknown';
-                    const schoolZip = school['school.zip'] || '00000';
-
-                    // Check if school exists
-                    const { data: existing } = await supabase
+                    // Manual existence check (Safe Upsert)
+                    let { data: existingSchool } = await supabase
                         .from('schools')
                         .select('id')
                         .eq('name', schoolName)
@@ -80,15 +77,22 @@ async function fetchSchools() {
                         .maybeSingle();
 
                     let schoolId;
-                    if (existing) {
-                        schoolId = existing.id;
+                    if (existingSchool) {
+                        schoolId = existingSchool.id;
+                        // Optional: Update record
+                        await supabase.from('schools').update({
+                            city: school['school.city'],
+                            state: schoolState,
+                            website: school['school.school_url'],
+                            accreditation_status: school['school.accreditation']
+                        }).eq('id', schoolId);
                     } else {
-                        const { data: inserted, error: insErr } = await supabase
+                        const { data: newSchool, error: insErr } = await supabase
                             .from('schools')
                             .insert({
                                 name: schoolName,
                                 city: school['school.city'],
-                                state: 'TX', // We queried for TX
+                                state: schoolState,
                                 zip: schoolZip,
                                 website: school['school.school_url'],
                                 accreditation_status: school['school.accreditation'],
@@ -97,43 +101,64 @@ async function fetchSchools() {
                             .single();
 
                         if (insErr) {
-                            console.error('Insert Error (School):', insErr.message);
+                            console.error(`  ❌ School Insert Error [${schoolName}]:`, insErr.message);
                             continue;
                         }
-                        schoolId = inserted.id;
+                        schoolId = newSchool.id;
+                        schoolsInserted++;
                     }
 
-                    // Insert Programs
-                    // We need to deduplicate programs if re-running?
-                    // Ideally we check. For debug, we construct payload.
-                    const programsPayload = relevantCodes.map(code => ({
-                        school_id: schoolId,
-                        program_name: `CIP ${code}`, // Placeholder name
-                        cip_code: code,
-                    }));
+                    // Process Programs for this school
+                    for (const code of relevantCodes) {
+                        let namePrefix = "Technical Program";
+                        if (code.startsWith('46')) namePrefix = "Construction/Trades";
+                        if (code.startsWith('47')) namePrefix = "Mechanic/Repair Tech";
+                        if (code.startsWith('48')) namePrefix = "Precision Production";
 
-                    if (programsPayload.length > 0) {
-                        const { error: pErr } = await supabase.from('programs').insert(programsPayload);
-                        if (pErr) {
-                            // Ignore uniqueness errors if any
-                            // console.error('Insert Error (Programs):', pErr.message);
+                        // Manual existence check for programs
+                        const { data: existingProg } = await supabase
+                            .from('programs')
+                            .select('id')
+                            .eq('school_id', schoolId)
+                            .eq('cip_code', code)
+                            .maybeSingle();
+
+                        if (!existingProg) {
+                            const { error: progErr } = await supabase
+                                .from('programs')
+                                .insert({
+                                    school_id: schoolId,
+                                    program_name: namePrefix,
+                                    cip_code: code,
+                                    tuition_in_state: tuition, // Correct field after rename
+                                    program_length_months: 12
+                                });
+
+                            if (progErr) {
+                                console.error(`    ❌ Program Insert Error [${code}]:`, progErr.message);
+                            } else {
+                                programsInserted++;
+                            }
                         }
                     }
                 }
             }
 
-        } catch (e: any) {
-            console.error('Fetch Error:', e.message);
-            if (e.response) {
-                console.error('API Response:', e.response.data);
-            }
-        }
+            console.log(`  Processed Page ${page}. Schools: ${schoolsInserted} New / ${schoolsProcessed} Total. Programs: ${programsInserted} New.`);
+            page++;
 
-        page++;
+            // Safety break 
+            if (page > 500) break;
+
+        } catch (e: any) {
+            console.error(`🛑 Critical Error on Page ${page}:`, e.message);
+            await new Promise(r => setTimeout(r, 5000)); // Cool down
+            page++; // Skip to next to avoid infinite loop
+        }
     }
 
-    console.log(`Total TX Schools found: ${totalTxSchools}`);
-    console.log(`Trade Schools retained: ${tradeSchoolsRetained}`);
+    console.log('🎉 INGESTION COMPLETE.');
+    console.log(`Summary: ${schoolsInserted} schools added, ${programsInserted} programs linked.`);
 }
 
 fetchSchools();

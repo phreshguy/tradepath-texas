@@ -13,6 +13,7 @@ const formatUrl = (url: string | null) => {
 
 type Props = {
     params: Promise<{
+        state: string;
         city: string;
         trade: string;
     }>;
@@ -45,30 +46,32 @@ function formatTradeTitle(slug: string): string {
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-    const { city, trade: tradeSlug } = await params;
+    const { state, city, trade: tradeSlug } = await params;
 
-    // Validate trade exists in our map, even if we use the specific slug for the title
+    // Validate trade exists in our map
     if (!categoryMap[tradeSlug.toLowerCase()]) return { title: 'Not Found' };
 
     const displayTrade = formatTradeTitle(decodeURIComponent(tradeSlug));
     const decodedCity = decodeURIComponent(city);
+    const decodedState = decodeURIComponent(state).toUpperCase();
 
     // Format city for display (Capitalize first letters)
     const cityTitle = decodedCity.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
-    const baseTitle = `${cityTitle} ${displayTrade} Schools: ${SEO_YEAR} Cost & Salary`;
+    const baseTitle = `${cityTitle} ${decodedState} ${displayTrade} Schools: ${SEO_YEAR} Cost & Salary`;
     const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
 
     return {
         title: seoTitle,
-        description: `Compare verified outcomes for ${displayTrade} programs in ${cityTitle}. Avg salary: $55k+. Govt Verified Data.`,
+        description: `Compare verified outcomes for ${displayTrade} programs in ${cityTitle}, ${decodedState}. Avg salary: $55k+. Govt Verified Data.`,
     };
 }
 
 export default async function Page({ params }: Props) {
-    const { city, trade: tradeSlug } = await params;
+    const { state, city, trade: tradeSlug } = await params;
     const cleanSlug = tradeSlug.toLowerCase();
     const mappedCategory = categoryMap[cleanSlug];
+    const stateUpper = state.toUpperCase();
 
     // If slug isn't in our valid list, 404
     if (!mappedCategory) {
@@ -81,22 +84,21 @@ export default async function Page({ params }: Props) {
 
     const supabase = createClient();
 
-    console.log('Searching for:', { city: decodedCity, slug: cleanSlug, category: mappedCategory });
+    console.log('Searching for:', { state: stateUpper, city: decodedCity, slug: cleanSlug, category: mappedCategory });
 
     // STRATEGY: 
     // 1. Try to find specific keyword match first (e.g. "HVAC").
     // 2. If no specific results, fallback to the broad category (e.g. "Mechanic").
 
-    // Step 1: Specific Query (e.g. Category="Mechanic" AND ProgramName ILIKE "%hvac%")
+    // Step 1: Specific Query
     let query = supabase
         .from('verified_roi_listings')
         .select('*')
+        .ilike('state', stateUpper) // Filter by State
         .ilike('city', `%${decodedCity}%`)
-        .ilike('program_name', mappedCategory ? `%${mappedCategory}%` : '') // Ensure we stay in the category family
+        .ilike('program_name', mappedCategory ? `%${mappedCategory}%` : '')
         .order('calculated_roi', { ascending: false });
 
-    // Add specific keyword filter if the slug is NOT the category base name
-    // (e.g. if slug is 'hvac', add filter. If slug is 'mechanic', don't add filter as mappedCategory handles it)
     const isSpecificSearch = cleanSlug !== 'mechanic' && cleanSlug !== 'construction' && cleanSlug !== 'precision';
 
     if (isSpecificSearch) {
@@ -108,12 +110,12 @@ export default async function Page({ params }: Props) {
     let isFallback = false;
 
     // Step 2: Fallback (Broad Category)
-    // If specific search yielded 0 results, query just the category
     if (listings.length === 0 && isSpecificSearch) {
         console.log('Specific search empty, falling back to broad category');
         const { data: broadListings } = await supabase
             .from('verified_roi_listings')
             .select('*')
+            .ilike('state', stateUpper) // Filter by State
             .ilike('city', `%${decodedCity}%`)
             .ilike('program_name', mappedCategory ? `%${mappedCategory}%` : '')
             .order('calculated_roi', { ascending: false });
@@ -138,13 +140,15 @@ export default async function Page({ params }: Props) {
                     <div className="mb-4 text-sm font-medium text-slate-400">
                         <Link href="/" className="hover:text-white transition-colors">Search</Link>
                         <span className="mx-2">/</span>
+                        <span className="text-safety-500">{stateUpper}</span>
+                        <span className="mx-2">/</span>
                         <span className="text-safety-500">{cityTitle}</span>
                         <span className="mx-2">/</span>
                         <span className="text-white">{displayTrade}</span>
                     </div>
 
                     <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
-                        Top Rated <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-200">{displayTrade}</span> Schools <br /> in {cityTitle}, TX
+                        Top Rated <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-200">{displayTrade}</span> Schools <br /> in {cityTitle}, {stateUpper}
                     </h1>
                     <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
                         Verified government data on salaries, tuition, and ROI for {displayTrade} careers in the {cityTitle} area.

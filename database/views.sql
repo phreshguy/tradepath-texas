@@ -26,10 +26,31 @@ select s.name as school_name,
 from programs p
     join schools s on p.school_id = s.id
     join cip_soc_matrix csm on p.cip_code = csm.cip_code
-    join bls_salary_data b on csm.soc_code = b.soc_code -- Ensure we match the state (Wages are TX, Schools are TX)
-    -- Using b.state_abbr = s.state OR b.state_abbr = 'TX' (since we only fetched TX wages)
-where b.state_abbr = 'TX'
+    join bls_salary_data b on csm.soc_code = b.soc_code -- MATCHING STATE: Wages must match School State
+where b.state_abbr = s.state
     and b.median_annual_salary is not null
 order by (
         b.median_annual_salary - coalesce(p.tuition_cost, 0)
     ) desc;
+-- RPC: get_seo_combinations
+-- Returns distinct City + State + Trade combinations for Sitemap generation
+create or replace function get_seo_combinations() returns table (
+        city text,
+        state text,
+        trade text
+    ) language sql as $$
+select distinct city,
+    state,
+    CASE
+        WHEN display_category = 'Construction Trade' THEN 'construction'
+        WHEN display_category = 'Mechanic/Repair Tech' THEN 'mechanic'
+        WHEN display_category = 'Precision Production' THEN 'precision'
+        ELSE 'other'
+    END as trade
+from verified_roi_listings
+where display_category IN (
+        'Construction Trade',
+        'Mechanic/Repair Tech',
+        'Precision Production'
+    );
+$$;
