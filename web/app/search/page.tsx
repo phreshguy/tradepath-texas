@@ -1,6 +1,7 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import SearchInput from '@/components/SearchInput';
 import ListingCard from '@/components/ListingCard';
+import { getStateAbbr } from '@/utils/states';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,14 @@ export default async function SearchPage(props: { searchParams: Promise<{ q?: st
 
     let query = supabase.from('verified_roi_listings').select('*');
 
-    if (q) {
+    // Smart State Recognition
+    const stateAbbr = q ? getStateAbbr(q) : null;
+
+    if (stateAbbr) {
+        // Intent: Search all programs in a specific state
+        query = query.eq('state', stateAbbr);
+    } else if (q) {
+        // Intent: Keyword/City fuzzy search
         query = query.or(`school_name.ilike.%${q}%,program_name.ilike.%${q}%,city.ilike.%${q}%`);
     }
 

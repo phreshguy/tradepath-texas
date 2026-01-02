@@ -54,3 +54,12 @@ export const STATE_MAP: Record<string, string> = {
 export function getStateName(abbr: string): string {
     return STATE_MAP[abbr.toLowerCase()] || abbr.toUpperCase();
 }
+
+export function getStateAbbr(search: string): string | null {
+    const clean = search.toLowerCase().trim();
+    // If it's already an abbreviation (exists as a key in STATE_MAP)
+    if (STATE_MAP[clean]) return clean.toUpperCase();
+    // Otherwise check for full name match
+    const entry = Object.entries(STATE_MAP).find(([abbr, name]) => name.toLowerCase() === clean);
+    return entry ? entry[0].toUpperCase() : null;
+}
