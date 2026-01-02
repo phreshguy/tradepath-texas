@@ -13,18 +13,33 @@ export default function SearchInput() {
     useEffect(() => {
         setTrade(searchParams.get("trade") || "");
         setCity(searchParams.get("city") || "");
+        // If on /search page, might want to populate city from q if city is empty
+        if (!city && searchParams.get("q")) {
+            setCity(searchParams.get("q") || "");
+        }
     }, [searchParams]);
 
     const handleSearch = () => {
-        const params = new URLSearchParams();
-        if (trade) params.set("trade", trade);
-        if (city.trim()) params.set("city", city.trim());
+        // Core Logic:
+        // 1. If "All Trades" and only City is typed -> Check if we want a state route or generic search
+        // 2. The requirement says: If no state selected, router.push('/search?q=' + searchTerm).
+        // Since we don't have a "State" selector in the bar (only City text), we use /search?q= for broad queries.
 
-        // Push with params or reset to root if empty
-        if (params.toString()) {
-            router.push(`/?${params.toString()}`);
+        const cityValue = city.trim();
+
+        if (!trade) {
+            // Broad Search
+            if (cityValue) {
+                router.push(`/search?q=${encodeURIComponent(cityValue)}`);
+            } else {
+                router.push("/");
+            }
         } else {
-            router.push("/");
+            // Filtered results on Home page
+            const params = new URLSearchParams();
+            params.set("trade", trade);
+            if (cityValue) params.set("city", cityValue);
+            router.push(`/?${params.toString()}`);
         }
     };
 
@@ -56,7 +71,7 @@ export default function SearchInput() {
             <div className="flex-grow md:w-1/3">
                 <input
                     type="text"
-                    placeholder="City (e.g. Austin)"
+                    placeholder="Search schools or cities..."
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     onKeyDown={handleKeyDown}

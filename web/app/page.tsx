@@ -1,16 +1,11 @@
 import { createClientComponentClient as createClient } from '@/utils/supabase/client';
 import Link from 'next/link';
 import SearchInput from '@/components/SearchInput';
+import ListingCard from '@/components/ListingCard';
 import { slugify } from '@/utils/slugify';
 import { STATE_MAP } from '@/utils/states';
 
 export const dynamic = 'force-dynamic';
-
-const formatUrl = (url: string | null) => {
-  if (!url) return null;
-  if (url.startsWith('http')) return url;
-  return `https://${url}`;
-};
 
 export default async function Home(props: { searchParams: Promise<{ trade?: string, city?: string }> }) {
   const searchParams = await props.searchParams;
@@ -87,64 +82,7 @@ export default async function Home(props: { searchParams: Promise<{ trade?: stri
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {listings.map((school: any, i: number) => (
-              <div key={i} className="bg-white rounded-2xl shadow-xl border border-slate-100 flex flex-col h-full overflow-hidden group hover:shadow-2xl hover:border-safety-500/30 transition-all duration-300">
-                <div className="bg-industrial-50/80 backdrop-blur-sm px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Est. 1st Year ROI</span>
-                  <span className="text-success-500 font-black text-xl tracking-tight">
-                    +${school.calculated_roi?.toLocaleString()}
-                  </span>
-                </div>
-
-                <div className="p-6 flex-grow">
-                  <h3 className="text-lg font-bold text-industrial-900 mb-2 leading-tight line-clamp-2">
-                    {school.school_name}
-                  </h3>
-                  <p className="text-safety-500 text-sm font-bold mb-4">{school.program_name}</p>
-
-                  <div className="text-sm text-secondary mb-6 flex items-start gap-1.5">
-                    <svg width="16" height="16" className="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>{school.city}, {school.state}</span>
-                  </div>
-
-                  <div className="space-y-5">
-                    <div className="flex justify-between items-baseline">
-                      <span className="text-xs font-semibold text-slate-400 uppercase">Tuition</span>
-                      {school.tuition_in_state > 0 ? (
-                        <span className="text-sm font-medium text-slate-600">${school.tuition_in_state?.toLocaleString()}</span>
-                      ) : (
-                        <span className="text-xs italic text-slate-400 bg-slate-100 px-2 py-0.5 rounded">Contact School</span>
-                      )}
-                    </div>
-
-                    <div className="bg-industrial-50 rounded-lg p-3 border border-slate-100 mt-2">
-                      <div className="flex justify-between items-end">
-                        <div className="flex flex-col gap-1">
-                          <span className="text-[10px] font-bold text-slate-400 uppercase">Projected Salary</span>
-                          <a href={school.salary_source_url || '#'} target="_blank" className="text-[10px] text-blue-500 font-medium hover:text-blue-700 flex items-center gap-1 group/link">
-                            Verify Gov Data
-                          </a>
-                        </div>
-                        <span className="text-2xl font-black text-industrial-900 tracking-tight">
-                          ${school.projected_salary?.toLocaleString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-4 bg-industrial-50 border-t border-slate-100">
-                  <a
-                    href={formatUrl(school.website) || '#'}
-                    target="_blank"
-                    className="block w-full text-center bg-industrial-900 text-white font-bold py-3 rounded-xl text-sm hover:bg-safety-500 hover:text-industrial-900 transition-all duration-200 shadow-sm hover:shadow-md active:scale-[0.98]"
-                  >
-                    Visit School
-                  </a>
-                </div>
-              </div>
+              <ListingCard key={i} school={school} />
             ))}
           </div>
         )}
