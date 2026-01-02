@@ -20,26 +20,16 @@ export default function SearchInput() {
     }, [searchParams]);
 
     const handleSearch = () => {
-        // Core Logic:
-        // 1. If "All Trades" and only City is typed -> Check if we want a state route or generic search
-        // 2. The requirement says: If no state selected, router.push('/search?q=' + searchTerm).
-        // Since we don't have a "State" selector in the bar (only City text), we use /search?q= for broad queries.
-
         const cityValue = city.trim();
+        const params = new URLSearchParams();
 
-        if (!trade) {
-            // Broad Search
-            if (cityValue) {
-                router.push(`/search?q=${encodeURIComponent(cityValue)}`);
-            } else {
-                router.push("/");
-            }
+        if (cityValue) params.set("q", cityValue);
+        if (trade && trade !== "") params.set("trade", trade);
+
+        if (params.toString()) {
+            router.push(`/search?${params.toString()}`);
         } else {
-            // Filtered results on Home page
-            const params = new URLSearchParams();
-            params.set("trade", trade);
-            if (cityValue) params.set("city", cityValue);
-            router.push(`/?${params.toString()}`);
+            router.push("/");
         }
     };
 
@@ -61,9 +51,14 @@ export default function SearchInput() {
                     style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23131313%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right .7em top 50%', backgroundSize: '.65em auto' }}
                 >
                     <option value="">All Trades</option>
-                    <option value="Construction Trade">Construction Trade</option>
-                    <option value="Mechanic/Repair Tech">Mechanic/Repair Tech</option>
-                    <option value="Precision Production">Precision Production</option>
+                    <option value="Welding Technology">Welding Technology</option>
+                    <option value="HVAC/R Technician">HVAC/R Technician</option>
+                    <option value="Electrician & Power Systems">Electrician & Power Systems</option>
+                    <option value="Plumbing & Pipefitting">Plumbing & Pipefitting</option>
+                    <option value="Automotive Service Tech">Automotive Service Tech</option>
+                    <option value="Diesel & Heavy Equipment">Diesel & Heavy Equipment</option>
+                    <option value="Carpentry & Construction">Carpentry & Construction</option>
+                    <option value="CNC Machining & Fabrication">CNC Machining & Fabrication</option>
                 </select>
             </div>
 
