@@ -20,8 +20,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const stateUpper = state.toUpperCase();
     const cityTitle = city.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 
+    const baseTitle = `Best Trade Schools in ${cityTitle}, ${stateUpper} (${SEO_YEAR})`;
+    const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
+
     return {
-        title: `Best Trade Schools in ${cityTitle}, ${stateUpper} (${SEO_YEAR} Cost & Salary)`,
+        title: seoTitle,
         description: `Compare verified outcomes for trade programs in ${cityTitle}, ${stateName}. Find state-verified ROI metrics for nursing, HVAC, CDL, and more.`,
     };
 }

@@ -9,9 +9,10 @@ interface ListingCardProps {
         city: string;
         state: string;
         calculated_roi: number;
-        tuition_in_state: number;
+        tuition_cost?: number;
+        tuition_in_state?: number;
         projected_salary: number;
-        salary_source_url: string;
+        salary_source_url?: string;
         website: string;
         soc_code?: string;
     };
@@ -61,8 +62,8 @@ export default function ListingCard({ school }: ListingCardProps) {
                     </div>
                     <div className="flex justify-between items-baseline">
                         <span className="text-xs font-semibold text-slate-400 uppercase">Tuition</span>
-                        {school.tuition_in_state > 0 ? (
-                            <span className="text-sm font-medium text-slate-600">${school.tuition_in_state.toLocaleString()}</span>
+                        {(school.tuition_cost ?? school.tuition_in_state ?? 0) > 0 ? (
+                            <span className="text-sm font-medium text-slate-600">${(school.tuition_cost ?? school.tuition_in_state ?? 0).toLocaleString()}</span>
                         ) : (
                             <span className="text-xs italic text-slate-400">Contact for Pricing</span>
                         )}

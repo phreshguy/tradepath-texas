@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-    const baseUrl = 'https://tradepathusa.com'; // Or your Vercel URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://tradepathusa.com';
     return {
         rules: {
             userAgent: '*',

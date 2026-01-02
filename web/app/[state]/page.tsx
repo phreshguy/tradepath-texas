@@ -16,8 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const stateName = getStateName(state);
     const stateUpper = state.toUpperCase();
 
+    const baseTitle = `Best Trade Schools in ${stateName} (${SEO_YEAR})`;
+    const seoTitle = baseTitle.length > 50 ? baseTitle : `${baseTitle} | TradePath`;
+
     return {
-        title: `Best Trade Schools in ${stateName} (${SEO_YEAR} Cost & Salary)`,
+        title: seoTitle,
         description: `Compare verified outcomes for trade programs in ${stateName}. Find the highest ROI schools for welding, HVAC, plumbing, and more in ${stateUpper}.`,
     };
 }
