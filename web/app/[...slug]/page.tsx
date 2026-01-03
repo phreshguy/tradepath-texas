@@ -309,8 +309,9 @@ export default async function CatchAllPage({ params }: Props) {
                                 </div>
                             ))}
                         </div>
-                </div>
+                    </div>
             </div>
+            </div >
         );
     }
 
