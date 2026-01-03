@@ -12,6 +12,11 @@ const trades = [
     "Diesel & Heavy Equipment",
     "Carpentry & Construction",
     "CNC Machining & Fabrication",
+    "Dental Assistant",
+    "Medical Clinical Assistant",
+    "Nursing (LPN-RN)",
+    "Cybersecurity & Network Tech",
+    "Cosmetology & Barbering",
 ];
 
 export default function SearchInput() {

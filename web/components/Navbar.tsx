@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import BrandLogo from './BrandLogo';
 import StateMenu, { MobileStateList } from './StateMenu';
+import MegaMenu from './MegaMenu';
 
 export default function Navbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -33,15 +34,7 @@ export default function Navbar() {
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="absolute top-full left-0 w-64 bg-industrial-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2-mt-1">
-                                <div className="grid grid-cols-1 gap-1">
-                                    <Link href="/welding" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Welding Technology</Link>
-                                    <Link href="/hvac" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">HVAC/R Technician</Link>
-                                    <Link href="/electrician" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Electrician & Power</Link>
-                                    <Link href="/plumbing" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Plumbing & Pipefitting</Link>
-                                    <Link href="/mechanic" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Auto Mechanic Service</Link>
-                                </div>
-                            </div>
+                            <MegaMenu />
                         </div>
 
                         <StateMenu />
@@ -108,12 +101,17 @@ export default function Navbar() {
                         {/* Mobile Trade Programs */}
                         <div className="px-3 py-3 border-t border-white/5 mt-2">
                             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Trade Programs</span>
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                                 <Link href="/welding" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Welding</Link>
                                 <Link href="/hvac" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">HVAC</Link>
                                 <Link href="/electrician" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Electrician</Link>
                                 <Link href="/plumbing" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Plumbing</Link>
                                 <Link href="/mechanic" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Mechanic</Link>
+                                <Link href="/dental-assistant" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Dental Asst</Link>
+                                <Link href="/medical-clinical-assistant" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Medical Asst</Link>
+                                <Link href="/nursing-lpn-rn" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Nursing</Link>
+                                <Link href="/cybersecurity-network-tech" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">IT & Cyber</Link>
+                                <Link href="/cosmetology-barbering" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Cosmetology</Link>
                             </div>
                         </div>
 

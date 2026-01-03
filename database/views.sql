@@ -28,6 +28,11 @@ select s.name as school_name,
         OR b.soc_code LIKE '47-206%' THEN 'Carpentry & Construction'
         WHEN b.soc_code LIKE '51-404%'
         OR b.soc_code LIKE '51-916%' THEN 'CNC Machining & Fabrication'
+        WHEN b.soc_code = '31-9091' THEN 'Dental Assistant'
+        WHEN b.soc_code = '31-9092' THEN 'Medical Clinical Assistant'
+        WHEN b.soc_code = '29-1141' THEN 'Nursing (LPN-RN)'
+        WHEN b.soc_code = '15-1212' THEN 'Cybersecurity & Network Tech'
+        WHEN b.soc_code = '39-5012' THEN 'Cosmetology & Barbering'
         ELSE 'Other'
     END as display_category
 from programs p
@@ -57,6 +62,11 @@ select distinct city,
         WHEN display_category = 'Diesel & Heavy Equipment' THEN 'diesel'
         WHEN display_category = 'Carpentry & Construction' THEN 'construction'
         WHEN display_category = 'CNC Machining & Fabrication' THEN 'machining'
+        WHEN display_category = 'Dental Assistant' THEN 'dental-assistant'
+        WHEN display_category = 'Medical Clinical Assistant' THEN 'medical-clinical-assistant'
+        WHEN display_category = 'Nursing (LPN-RN)' THEN 'nursing-lpn-rn'
+        WHEN display_category = 'Cybersecurity & Network Tech' THEN 'cybersecurity-network-tech'
+        WHEN display_category = 'Cosmetology & Barbering' THEN 'cosmetology-barbering'
         ELSE 'other'
     END as trade
 from verified_roi_listings
