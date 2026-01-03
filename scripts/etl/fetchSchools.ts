@@ -13,12 +13,12 @@ if (!supabaseUrl || !supabaseKey || !apiKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// "The Big Three" Trades: Construction (46), Mechanic (47), Precision/Industrial (48)
-const TARGET_FAMILIES = ['46', '47', '48'];
+// Trade Families: Construction (46), Mechanic (47), Precision (48), Tech (11), Services (12), Medical (51)
+const TARGET_FAMILIES = ['46', '47', '48', '11', '12', '51'];
 const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools.json';
 
 async function fetchSchools() {
-    console.log('🚀 Starting NATIONAL School Ingestion (Safe Mode)...');
+    console.log('🚀 Starting NATIONAL School Ingestion (Expanded Mode)...');
 
     let page = 0;
     const perPage = 100;
@@ -114,6 +114,12 @@ async function fetchSchools() {
                         if (code.startsWith('46')) namePrefix = "Construction/Trades";
                         if (code.startsWith('47')) namePrefix = "Mechanic/Repair Tech";
                         if (code.startsWith('48')) namePrefix = "Precision Production";
+                        if (code.startsWith('11')) namePrefix = "Cybersecurity & Network Tech";
+                        if (code.startsWith('12')) namePrefix = "Cosmetology & Barbering";
+                        if (code.startsWith('5106')) namePrefix = "Dental Assistant";
+                        else if (code.startsWith('5108')) namePrefix = "Medical Clinical Assistant";
+                        else if (code.startsWith('5138')) namePrefix = "Nursing (LPN-RN)";
+                        else if (code.startsWith('51')) namePrefix = "Medical & Health";
 
                         // Manual existence check for programs
                         const { data: existingProg } = await supabase

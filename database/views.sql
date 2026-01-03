@@ -9,11 +9,11 @@ select s.name as school_name,
     s.zip,
     s.website,
     p.program_name,
-    p.tuition_cost,
+    p.tuition_in_state as tuition_cost,
     p.program_length_months,
     b.median_annual_salary as projected_salary,
     (
-        b.median_annual_salary - coalesce(p.tuition_cost, 0)
+        b.median_annual_salary - coalesce(p.tuition_in_state, 0)
     ) as calculated_roi,
     b.soc_title,
     b.soc_code,
