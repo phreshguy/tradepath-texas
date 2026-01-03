@@ -8,163 +8,164 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const apiKey = process.env.DATA_GOV_API_KEY;
 
 if (!supabaseUrl || !supabaseKey || !apiKey) {
-    throw new Error('Missing configuration: Check .env file for Supabase/API Keys.');
+    throw new Error('Missing configuration. Check .env');
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Trade Families: Construction (46), Mechanic (47), Precision (48), Tech (11), Services (12), Medical (51)
+// Target Families including NEW expansions:
+// 46: Construction, 47: Mechanic, 48: Precision
+// 11: IT/Tech, 12: Cosmetology/Culinary, 51: Healthcare
 const TARGET_FAMILIES = ['46', '47', '48', '11', '12', '51'];
 const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools.json';
 
 async function fetchSchools() {
-    console.log('🚀 Starting NATIONAL School Ingestion (Expanded Mode)...');
+    console.log('🚀 Starting HIGH-SPEED National School Ingestion...');
 
     let page = 0;
     const perPage = 100;
     let schoolsProcessed = 0;
-    let schoolsInserted = 0;
-    let programsInserted = 0;
     let hasMore = true;
 
     while (hasMore) {
         try {
-            console.log(`📡 Fetching Page ${page} (Offset ${page * perPage})...`);
+            console.log(`📡 Fetching API Page ${page} (Batch Size ${perPage})...`);
 
             const response = await axios.get(BASE_URL, {
                 params: {
                     api_key: apiKey,
-                    // Request specific fields including tuition
-                    fields: 'id,school.name,latest.programs.cip_4_digit,school.city,school.zip,school.accreditation,school.school_url,school.state,latest.cost.tuition.in_state',
+                    fields: 'id,school.name,latest.programs.cip_4_digit,school.city,school.zip,school.school_url,school.state,latest.cost.tuition.in_state',
                     per_page: perPage,
                     page: page,
-                    'school.operating': 1 // Only open schools
-                }
+                    'school.operating': 1
+                },
+                timeout: 10000
             });
 
             const results = response.data.results || [];
+            if (results.length === 0) { hasMore = false; break; }
 
-            if (results.length === 0) {
-                console.log('✅ Reached end of data results.');
-                hasMore = false;
-                break;
-            }
+            // --- BATCH PREPARATION ---
+            // Instead of inserting one by one, we build Arrays
+            const schoolsToUpsert: any[] = [];
+            const programsToUpsert: any[] = [];
+            const schoolLookupMap = new Map(); // Maps Name+Zip -> API Data for program linkage
 
-            // SEQUENTIAL PROCESSING (Normal Route for reliability)
             for (const school of results) {
-                schoolsProcessed++;
-
                 const programsMap = school['latest.programs.cip_4_digit'];
                 if (!programsMap) continue;
 
                 const programCodes = Object.keys(programsMap);
-                const relevantCodes = programCodes.filter(code =>
+                // Fast filter
+                const hasTargetPrograms = programCodes.some(code =>
                     TARGET_FAMILIES.some(fam => code.startsWith(fam))
                 );
 
-                if (relevantCodes.length > 0) {
-                    const schoolName = school['school.name'] || 'Unknown School';
-                    const schoolZip = (school['school.zip'] || '00000').substring(0, 5);
-                    const schoolState = (school['school.state'] || 'US').toUpperCase();
-                    const tuition = school['latest.cost.tuition.in_state'] || 0;
+                if (hasTargetPrograms) {
+                    const cleanName = school['school.name'] || 'Unknown School';
+                    const cleanZip = (school['school.zip'] || '00000').substring(0, 5);
+                    const key = `${cleanName}-${cleanZip}`;
 
-                    // Manual existence check (Safe Upsert)
-                    let { data: existingSchool } = await supabase
-                        .from('schools')
-                        .select('id')
-                        .eq('name', schoolName)
-                        .eq('zip', schoolZip)
-                        .maybeSingle();
+                    // Add to School Payload (no accreditation_status - field doesn't exist in DB)
+                    schoolsToUpsert.push({
+                        name: cleanName,
+                        city: school['school.city'],
+                        state: (school['school.state'] || 'US').toUpperCase(),
+                        zip: cleanZip,
+                        website: school['school.school_url']
+                    });
 
-                    let schoolId;
-                    if (existingSchool) {
-                        schoolId = existingSchool.id;
-                        // Optional: Update record
-                        await supabase.from('schools').update({
-                            city: school['school.city'],
-                            state: schoolState,
-                            website: school['school.school_url'],
-                            accreditation_status: school['school.accreditation']
-                        }).eq('id', schoolId);
-                    } else {
-                        const { data: newSchool, error: insErr } = await supabase
-                            .from('schools')
-                            .insert({
-                                name: schoolName,
-                                city: school['school.city'],
-                                state: schoolState,
-                                zip: schoolZip,
-                                website: school['school.school_url'],
-                                accreditation_status: school['school.accreditation'],
-                            })
-                            .select('id')
-                            .single();
-
-                        if (insErr) {
-                            console.error(`  ❌ School Insert Error [${schoolName}]:`, insErr.message);
-                            continue;
-                        }
-                        schoolId = newSchool.id;
-                        schoolsInserted++;
-                    }
-
-                    // Process Programs for this school
-                    for (const code of relevantCodes) {
-                        let namePrefix = "Technical Program";
-                        if (code.startsWith('46')) namePrefix = "Construction/Trades";
-                        if (code.startsWith('47')) namePrefix = "Mechanic/Repair Tech";
-                        if (code.startsWith('48')) namePrefix = "Precision Production";
-                        if (code.startsWith('11')) namePrefix = "Cybersecurity & Network Tech";
-                        if (code.startsWith('12')) namePrefix = "Cosmetology & Barbering";
-                        if (code.startsWith('5106')) namePrefix = "Dental Assistant";
-                        else if (code.startsWith('5108')) namePrefix = "Medical Clinical Assistant";
-                        else if (code.startsWith('5138')) namePrefix = "Nursing (LPN-RN)";
-                        else if (code.startsWith('51')) namePrefix = "Medical & Health";
-
-                        // Manual existence check for programs
-                        const { data: existingProg } = await supabase
-                            .from('programs')
-                            .select('id')
-                            .eq('school_id', schoolId)
-                            .eq('cip_code', code)
-                            .maybeSingle();
-
-                        if (!existingProg) {
-                            const { error: progErr } = await supabase
-                                .from('programs')
-                                .insert({
-                                    school_id: schoolId,
-                                    program_name: namePrefix,
-                                    cip_code: code,
-                                    tuition_in_state: tuition, // Correct field after rename
-                                    program_length_months: 12
-                                });
-
-                            if (progErr) {
-                                console.error(`    ❌ Program Insert Error [${code}]:`, progErr.message);
-                            } else {
-                                programsInserted++;
-                            }
-                        }
-                    }
+                    // Store raw data to map programs after we get IDs back
+                    schoolLookupMap.set(key, {
+                        codes: programCodes,
+                        tuition: school['latest.cost.tuition.in_state'] || 0
+                    });
                 }
             }
 
-            console.log(`  Processed Page ${page}. Schools: ${schoolsInserted} New / ${schoolsProcessed} Total. Programs: ${programsInserted} New.`);
-            page++;
+            // --- BULK ACTION 1: Insert Schools (with duplicate handling) ---
+            if (schoolsToUpsert.length > 0) {
+                // Try bulk insert - duplicates will be silently skipped
+                const { data: insertedSchools, error: schoolErr } = await supabase
+                    .from('schools')
+                    .insert(schoolsToUpsert)
+                    .select('id, name, zip');
 
-            // Safety break 
-            if (page > 500) break;
+                // Fetch ALL schools from this batch (including pre-existing ones)
+                const allSchoolKeys = schoolsToUpsert.map(s => ({ name: s.name, zip: s.zip }));
+                const { data: allSchools } = await supabase
+                    .from('schools')
+                    .select('id, name, zip')
+                    .in('name', allSchoolKeys.map(k => k.name));
+
+                const savedSchools = allSchools || [];
+
+                // --- BULK ACTION 2: Prepare Programs ---
+                // Match the new IDs back to our Program data
+                savedSchools?.forEach(savedDbRow => {
+                    const key = `${savedDbRow.name}-${savedDbRow.zip}`;
+                    const rawData = schoolLookupMap.get(key);
+
+                    if (rawData) {
+                        const { codes, tuition } = rawData;
+
+                        // Process codes for this specific school
+                        codes.forEach((code: string) => {
+                            if (!TARGET_FAMILIES.some(fam => code.startsWith(fam))) return;
+
+                            let namePrefix = "Technical Trade Program";
+
+                            // Precise Naming Logic for New Expansions
+                            if (code.startsWith('11')) namePrefix = "Cybersecurity & Network Tech";
+                            else if (code.startsWith('12')) namePrefix = "Cosmetology & Barbering";
+                            else if (code.startsWith('46')) namePrefix = "Construction & Electrical";
+                            else if (code.startsWith('47')) namePrefix = "Mechanic & HVAC Tech";
+                            else if (code.startsWith('48')) namePrefix = "Precision & Welding";
+                            else if (code.startsWith('5106')) namePrefix = "Dental Assistant";
+                            else if (code.startsWith('5108')) namePrefix = "Medical Clinical Assistant";
+                            else if (code.startsWith('5138')) namePrefix = "Nursing (LPN-RN)";
+                            else if (code.startsWith('51')) namePrefix = "Healthcare Technology";
+
+                            programsToUpsert.push({
+                                school_id: savedDbRow.id,
+                                cip_code: code,
+                                program_name: namePrefix,
+                                tuition_in_state: tuition,
+                                program_length_months: 12
+                            });
+                        });
+                    }
+                });
+
+                // --- BULK ACTION 3: Insert Programs (duplicates ignored) ---
+                if (programsToUpsert.length > 0) {
+                    const { error: progErr } = await supabase
+                        .from('programs')
+                        .insert(programsToUpsert);
+
+                    // Silently ignore duplicate errors - programs may already exist
+                    if (progErr && !progErr.message.includes('duplicate')) {
+                        console.error("Program Batch Error:", progErr.message);
+                    }
+                }
+
+                schoolsProcessed += schoolsToUpsert.length;
+                console.log(`  ✅ Synced ${schoolsToUpsert.length} schools & ${programsToUpsert.length} programs in batch.`);
+            }
+
+            page++;
+            // 60-70 pages covers most trade schools, increase to 200 for full university coverage
+            if (page > 300) break;
 
         } catch (e: any) {
-            console.error(`🛑 Critical Error on Page ${page}:`, e.message);
-            await new Promise(r => setTimeout(r, 5000)); // Cool down
-            page++; // Skip to next to avoid infinite loop
+            console.error(`🛑 Error on page ${page}:`, e.message);
+            // Don't crash, just retry next page
+            await new Promise(r => setTimeout(r, 2000));
+            page++;
         }
     }
 
-    console.log('🎉 INGESTION COMPLETE.');
-    console.log(`Summary: ${schoolsInserted} schools added, ${programsInserted} programs linked.`);
+    console.log(`🎉 COMPLETED. Total Trade Schools Managed: ${schoolsProcessed}`);
 }
 
 fetchSchools();

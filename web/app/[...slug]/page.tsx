@@ -145,7 +145,7 @@ export default async function CatchAllPage({ params }: Props) {
         const { data: listingsData } = await supabase
             .from('verified_roi_listings')
             .select('*')
-            .ilike('program_name', `%${tradeInfo.keyword}%`)
+            .eq('display_category', tradeInfo.title) // Exact match on View Category
             .order('calculated_roi', { ascending: false })
             .limit(200);
 

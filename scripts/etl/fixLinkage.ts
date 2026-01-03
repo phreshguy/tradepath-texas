@@ -31,6 +31,26 @@ const MAPPINGS = [
     { cip_code: '48.0508', soc_code: '51-4121', title: 'Welding Technology' },
     { cip_code: '48.0501', soc_code: '51-4041', title: 'Machinists' },
     { cip_code: '48.0503', soc_code: '51-4011', title: 'CNC Tool Programmers' },
+
+    // --- EXPANSION: HIGH-VALUE TRADES (Tech, Medical, Services) ---
+
+    // 11: Tech & Cybersecurity
+    { cip_code: '11', soc_code: '15-1212', title: 'Information Security Analysts' },
+    { cip_code: '11.0901', soc_code: '15-1151', title: 'Computer Network Support Specialists' },
+    { cip_code: '11.1003', soc_code: '15-1212', title: 'Information Security Analysts' },
+
+    // 12: Cosmetology & Personal Services
+    { cip_code: '12', soc_code: '39-5012', title: 'Hairdressers, Hairstylists, and Cosmetologists' },
+    { cip_code: '12.0401', soc_code: '39-5012', title: 'Cosmetology/Cosmetologist' },
+    { cip_code: '12.0402', soc_code: '39-5011', title: 'Barbers' },
+
+    // 51: Healthcare (Nursing, Dental, Medical Assist)
+    { cip_code: '51', soc_code: '29-1141', title: 'Registered Nurses' },
+    { cip_code: '51.3801', soc_code: '29-1141', title: 'Registered Nurses' },
+    { cip_code: '51.3901', soc_code: '29-2061', title: 'Licensed Practical and Licensed Vocational Nurses' },
+    { cip_code: '51.0601', soc_code: '31-9091', title: 'Dental Assistants' },
+    { cip_code: '51.0801', soc_code: '31-9092', title: 'Medical Assistants' }, // Broad Medical Assistant
+    { cip_code: '51.0904', soc_code: '29-2041', title: 'Emergency Medical Technicians' }, // EMS
 ];
 
 async function fixLinkage() {

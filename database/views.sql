@@ -42,7 +42,7 @@ from programs p
 where b.state_abbr = s.state
     and b.median_annual_salary is not null
 order by (
-        b.median_annual_salary - coalesce(p.tuition_cost, 0)
+        b.median_annual_salary - coalesce(p.tuition_in_state, 0)
     ) desc;
 -- RPC: get_seo_combinations
 -- Returns distinct City + State + Trade combinations for Sitemap generation
