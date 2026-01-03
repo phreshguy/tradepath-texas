@@ -216,18 +216,20 @@ export default async function CatchAllPage({ params }: Props) {
                     {/* National Top 10 Leaderboard */}
                     {!isValueOnly && (
                         <div className="mb-24">
-                            {/* Leaderboard Header */}
-                            <div className="text-center py-16">
-                                <div className="flex justify-center mb-4">
-                                    <span className="text-6xl animate-bounce">🏆</span>
+                            {/* Refined Header */}
+                            <div className="text-center py-12 md:py-20">
+                                <div className="inline-flex items-center gap-2 bg-industrial-900 text-safety-500 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 shadow-lg">
+                                    <span className="w-1.5 h-1.5 bg-safety-500 rounded-full animate-pulse"></span>
+                                    National Rankings
                                 </div>
-                                <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-300 opacity-90 drop-shadow-2xl">
-                                    LEADERBOARD
+                                <h2 className="text-4xl md:text-6xl lg:text-7xl font-black italic uppercase tracking-tighter text-industrial-950 leading-none">
+                                    The <span className="text-transparent bg-clip-text bg-gradient-to-r from-industrial-900 to-industrial-600">Leaderboard</span>
                                 </h2>
-                                <p className="mt-4 text-safety-500 font-bold tracking-[0.25em] text-sm md:text-base uppercase flex items-center justify-center gap-4">
-                                    <span className="w-8 h-[2px] bg-safety-500/30"></span>
+                                <div className="flex justify-center mt-6 mb-4">
+                                    <div className="h-1.5 w-24 bg-safety-500 rounded-full"></div>
+                                </div>
+                                <p className="text-slate-500 font-bold uppercase tracking-[0.15em] text-xs md:text-sm flex items-center justify-center gap-3">
                                     Top 10 Programs Nationwide
-                                    <span className="w-8 h-[2px] bg-safety-500/30"></span>
                                 </p>
                             </div>
 
