@@ -55,7 +55,13 @@ async function fetchSchools() {
                 const programsMap = school['latest.programs.cip_4_digit'];
                 if (!programsMap) continue;
 
-                const programCodes = Object.keys(programsMap);
+                let programCodes: string[] = [];
+                if (Array.isArray(programsMap)) {
+                    programCodes = programsMap.map((p: any) => p.code);
+                } else {
+                    programCodes = Object.keys(programsMap);
+                }
+
                 // Fast filter
                 const hasTargetPrograms = programCodes.some(code =>
                     TARGET_FAMILIES.some(fam => code.startsWith(fam))
@@ -77,7 +83,7 @@ async function fetchSchools() {
 
                     // Store raw data to map programs after we get IDs back
                     schoolLookupMap.set(key, {
-                        codes: programCodes,
+                        codes: programCodes, // Use the extracted codes we normalized above
                         tuition: school['latest.cost.tuition.in_state'] || 0
                     });
                 }

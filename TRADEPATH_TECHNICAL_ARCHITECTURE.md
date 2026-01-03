@@ -16,78 +16,83 @@
 
 ### Tables
 
-- **schools**: Core school data.
-- **programs**: Tuition and program lengths.
-- **bls_salary_data**: Gov source for wages.
-- **cip_soc_matrix**: The handshake link.
-- **blog_posts**: CMS table.
-  - Calls: `title`, `slug`, `content_markdown`, `status` [draft/published], `cover_image_url`.
-- **content_ideas**: n8n War Room.
-  - Cols: `topic_title`, `target_keyword`, `status` [pending/processing/completed], `angle`.
+- **schools**: Core school data (Name, City, State, ZIP).
+- **programs**: Tuition, Program Name, CIP Code.
+- **bls_salary_data**: Gov source for wages (SOC Code).
+- **cip_soc_matrix**: The "Bridge" table linking Education (CIP) to Jobs (SOC).
+  - *Update:* Now supports both 6-digit (standard) and 4-digit (API) CIP codes.
+- **blog_posts**: CMS table for AI-generated content.
 
 ### Critical View
 
-- **verified_roi_listings**: Joins schools to wages + adds buckets logic.
+- **verified_roi_listings**: The ROI Engine.
+  - **Joins:** Schools -> Programs -> CIP/SOC Matrix -> BLS Wages.
+  - **Logic:** Calculates `Projected Salary - Tuition` = ROI.
+  - **Categorization:** Maps raw SOC codes to user-friendly "Display Categories" (e.g., "Nursing (LPN-RN)", "Cybersecurity").
 
-### Functions
+## 3. DATA INGESTION PIPELINE (The Engine)
 
-- **get_and_lock_next_idea()**: RPC function for n8n atomic locking.
+### School Ingestion (`scripts/etl/fetchSchools.ts`)
 
-## 3. N8N AUTOMATION ARCHITECTURE
+- **Source:** Dept of Education API (College Scorecard).
+- **Method:** "High-Speed" Batch Upsert.
+  - Fetches 100 schools/page.
+  - Buffers data into arrays.
+  - Performs **Batch Insert** (ignoring duplicates) for Schools.
+  - Performs **Batch Insert** for Programs, linking to valid School IDs.
+- **Handling:** Patched to handle both Object and Array-based CIP responses from the API.
 
-### Workflow A (The Scout)
+### Trade Mapping (`scripts/etl/fixLinkage.ts`)
 
-- **Frequency:** Runs weekly.
-- **Action:** Scrapes RSS (News/Reddit) -> AI Strategist (Filters & Scores) -> Saves to `content_ideas`.
-
-### Workflow B (The Factory)
-
-- **Frequency:** Runs hourly.
-- **Logic:** Polls `content_ideas` for 'pending' -> Locks topic -> Research (Serper + Tavily) -> Cross-checks Internal Data -> AI Writer (DeepSeek/Gemini) -> Auto-formats (Markdown) -> Saves to `blog_posts` (Draft) -> Notifies Telegram.
+- **Purpose:** Bridges the gap between Education and Industry.
+- **Logic:**
+  - Inject manual mappings into `cip_soc_matrix`.
+  - Supports Granular Mappings (e.g., `5106` -> Dental Assistant).
+  - Enables "Future Expansion" by simply adding new CIP-to-SOC pairs.
 
 ## 4. FRONTEND STRUCTURE (/web)
 
-### pSEO
+### Unified Routing (`web/app/[...slug]/page.tsx`)
 
-- `web/app/local/[city]/[trade]/page.tsx` (Dynamic Landing Pages).
-
-### Blog
-
-- `web/app/blog/[slug]/page.tsx` (Static Generated w/ Revalidation).
-- Uses `react-markdown` + `remark-gfm` + typography plugin for "White Paper" rendering.
+- **One Route to Rule Them All:** Handles both State Hubs (`/tx`, `/fl`) and Trade Hubs (`/welding`, `/nursing-lpn-rn`).
+- **Logic:**
+  1. Checks if slug is a State Abbreviation -> Renders State Directory.
+  2. Checks if slug is a Trade Key -> Renders National Trade Hub.
+  3. Else -> 404.
 
 ### Components
 
-- **Navbar:** Client Component for Mobile menu.
-- **SearchInput:** Core search component.
+- **MegaMenu:** Professional 2-column navigation ("Skilled Trades" vs "Healthcare & Tech").
+- **SearchInput:** Smart search filtering by `display_category`.
+- **ListingCard:** Displays ROI, Tuition, and Salary data points.
 
-## 5. SEO STRATEGY
+## 5. N8N AUTOMATION ARCHITECTURE
 
-**Sitemap:**
+### Workflow A (The Scout)
 
-- Dynamic generation in `sitemap.ts` (combines static routes + database blogs + city/trade permutations).
+- **Frequency:** Weekly.
+- **Action:** Scrapes RSS -> AI Strategist -> `content_ideas`.
+
+### Workflow B (The Factory)
+
+- **Frequency:** Hourly.
+- **Logic:** Polls `pending` ideas -> Research -> AI Writer -> Formats Markdown -> Saves Draft.
+
+## 6. SEO STRATEGY
+
+**Sitemap (`sitemap.ts`):**
+
+- Dynamically generates massive scale sitemap.
+- Combines: Static Routes + Blog Posts + City/Trade Permutations (via `get_seo_combinations` RPC).
 
 **Metadata:**
 
-- Dynamic year logic (`SEO_YEAR` constant).
+- Programmatic generation based on Page Slug and Trade Data keys.
 
-**Analytics:**
-
-- Google Analytics 4 (`next/script`) + Vercel Analytics.
-
-**Verification:**
-
-- Google + Yandex ownership tags in layout.
-
-## 6. ENVIRONMENT VARIABLES
+## 7. ENVIRONMENT VARIABLES
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
-- `NEXT_PUBLIC_BASE_URL`
-- `BLS_API_KEY`
-- `OPENAI_API_KEY`
-- `SERPER_API_KEY`
-- `TAVILY_API_KEY`
-- `TELEGRAM_BOT_TOKEN`
-- `TELEGRAM_CHAT_ID`
+- `SUPABASE_SERVICE_ROLE_KEY` (Backend only)
+- `DATA_GOV_API_KEY` (School Data)
+- `BLS_API_KEY` (Wage Data)

@@ -46,11 +46,18 @@ const MAPPINGS = [
 
     // 51: Healthcare (Nursing, Dental, Medical Assist)
     { cip_code: '51', soc_code: '29-1141', title: 'Registered Nurses' },
+    // 4-Digit API Format Matches
+    { cip_code: '5106', soc_code: '31-9091', title: 'Dental Assistants' },
+    { cip_code: '5108', soc_code: '31-9092', title: 'Medical Assistants' },
+    { cip_code: '5138', soc_code: '29-1141', title: 'Registered Nurses' },
+    { cip_code: '5139', soc_code: '29-2061', title: 'Licensed Practical and Licensed Vocational Nurses' },
+
+    // 6-Digit Standard Matches (Keep for safety)
     { cip_code: '51.3801', soc_code: '29-1141', title: 'Registered Nurses' },
     { cip_code: '51.3901', soc_code: '29-2061', title: 'Licensed Practical and Licensed Vocational Nurses' },
     { cip_code: '51.0601', soc_code: '31-9091', title: 'Dental Assistants' },
-    { cip_code: '51.0801', soc_code: '31-9092', title: 'Medical Assistants' }, // Broad Medical Assistant
-    { cip_code: '51.0904', soc_code: '29-2041', title: 'Emergency Medical Technicians' }, // EMS
+    { cip_code: '51.0801', soc_code: '31-9092', title: 'Medical Assistants' },
+    { cip_code: '51.0904', soc_code: '29-2041', title: 'Emergency Medical Technicians' },
 ];
 
 async function fixLinkage() {
