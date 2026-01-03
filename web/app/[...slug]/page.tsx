@@ -195,7 +195,8 @@ export default async function CatchAllPage({ params }: Props) {
             }
         }
 
-        if (listings.length === 0) notFound();
+        // REMOVED FOR PHASE 3: Prevent 404 during data ingestion updates
+        // if (listings.length === 0) notFound();
 
         const goldList = listings.slice(0, 10);
         const stateGroups = listings.reduce((acc: Record<string, any[]>, item) => {
@@ -239,7 +240,7 @@ export default async function CatchAllPage({ params }: Props) {
                     )}
 
                     {/* National Top 10 Leaderboard */}
-                    {!isValueOnly && (
+                    {!isValueOnly && listings.length > 0 && (
                         <div className="mb-24">
                             {/* Refined Header */}
                             <div className="text-center py-12 md:py-20">
@@ -271,28 +272,43 @@ export default async function CatchAllPage({ params }: Props) {
                         </div>
                     )}
 
-                    {/* Browse by State (Results Only) */}
-                    <div className="space-y-20">
-                        <div className="flex items-center gap-4 mb-10 overflow-hidden">
-                            <h2 className="text-2xl md:text-3xl font-black text-industrial-950 uppercase tracking-tighter italic flex-shrink-0">
-                                State <span className="text-industrial-400">Directory</span>
-                            </h2>
-                            <div className="h-[2px] w-full bg-gradient-to-r from-industrial-200 to-transparent"></div>
-                        </div>
-                        {sortedStates.map((stateAbbr) => (
-                            <div key={stateAbbr} className="scroll-mt-24">
-                                <h3 className="text-xl font-bold text-industrial-800 mb-6 flex items-center gap-3">
-                                    <span className="w-8 h-1 bg-safety-500 rounded-full"></span>
-                                    {getStateName(stateAbbr)}
-                                </h3>
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {stateGroups[stateAbbr].map((school, i) => (
-                                        <ListingCard key={i} school={school} />
-                                    ))}
-                                </div>
+                    {/* EMPTY STATE - PHASE 3 */}
+                    {listings.length === 0 && (
+                        <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-12 text-center max-w-2xl mx-auto my-24">
+                            <div className="inline-flex items-center justify-center w-20 h-20 bg-blue-50 text-blue-500 rounded-full mb-6">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin-slow"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
                             </div>
-                        ))}
-                    </div>
+                            <h3 className="text-2xl font-bold text-industrial-900 mb-2">Synchronizing National Database</h3>
+                            <p className="text-slate-500 text-lg max-w-lg mx-auto leading-relaxed">
+                                We are currently verifying 2025 program data for <span className="font-bold text-industrial-900">{tradeInfo.title}</span>.
+                                Please check back shortly as our realtime ROI engine completes its update.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Browse by State (Results Only) */}
+                    {sortedStates.length > 0 && (
+                        <div className="space-y-20">
+                            <div className="flex items-center gap-4 mb-10 overflow-hidden">
+                                <h2 className="text-2xl md:text-3xl font-black text-industrial-950 uppercase tracking-tighter italic flex-shrink-0">
+                                    State <span className="text-industrial-400">Directory</span>
+                                </h2>
+                                <div className="h-[2px] w-full bg-gradient-to-r from-industrial-200 to-transparent"></div>
+                            </div>
+                            {sortedStates.map((stateAbbr) => (
+                                <div key={stateAbbr} className="scroll-mt-24">
+                                    <h3 className="text-xl font-bold text-industrial-800 mb-6 flex items-center gap-3">
+                                        <span className="w-8 h-1 bg-safety-500 rounded-full"></span>
+                                        {getStateName(stateAbbr)}
+                                    </h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        {stateGroups[stateAbbr].map((school, i) => (
+                                            <ListingCard key={i} school={school} />
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                 </div>
             </div>
         );
@@ -319,8 +335,9 @@ export default async function CatchAllPage({ params }: Props) {
                 .eq('display_category', tradeInfo.title)
                 .order('calculated_roi', { ascending: false });
 
-            // If found, render city-specific view
-            if (listings && listings.length > 0) {
+            // If found, render city-specific view OR empty state
+            // Changed from 'if (listings && listings.length > 0)' to allow rendering "No Results" page
+            if (listings) {
                 return (
                     <div className="min-h-screen bg-industrial-100 pb-24">
                         <section className="bg-industrial-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
@@ -348,6 +365,19 @@ export default async function CatchAllPage({ params }: Props) {
                                     <ListingCard key={i} school={school} />
                                 ))}
                             </div>
+
+                            {/* EMPTY STATE - PHASE 3 */}
+                            {listings.length === 0 && (
+                                <div className="bg-white rounded-2xl shadow-xl border border-slate-100 p-12 text-center max-w-2xl mx-auto mt-12">
+                                    <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-blue-500 rounded-full mb-6">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin-slow"><path d="M21 12a9 9 0 1 1-6.219-8.56" /></svg>
+                                    </div>
+                                    <h3 className="text-xl font-bold text-industrial-900 mb-2">Syncing {tradeInfo.title} Data</h3>
+                                    <p className="text-slate-500">
+                                        We are verifying local programs in {cityName}. Check back soon.
+                                    </p>
+                                </div>
+                            )}
                         </section>
                     </div>
                 );
