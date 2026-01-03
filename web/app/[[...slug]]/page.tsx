@@ -216,25 +216,21 @@ export default async function CatchAllPage({ params }: Props) {
                     {/* National Top 10 Leaderboard */}
                     {!isValueOnly && (
                         <div className="mb-24">
-                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b-2 border-industrial-200 pb-6">
-                                <div className="flex items-center gap-5">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-safety-400 to-safety-600 rounded-2xl flex items-center justify-center text-3xl shadow-xl shadow-safety-500/30 rotate-3">
-                                        🏆
-                                    </div>
-                                    <div>
-                                        <h2 className="text-3xl md:text-5xl font-black text-industrial-950 uppercase italic leading-none tracking-tighter">
-                                            National <span className="text-safety-600">Leaderboard</span>
-                                        </h2>
-                                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-2 flex items-center gap-2">
-                                            <span className="w-8 h-[2px] bg-safety-500"></span>
-                                            Top 10 Programs Nationwide
-                                        </p>
-                                    </div>
+                            {/* Leaderboard Header */}
+                            <div className="text-center py-16">
+                                <div className="flex justify-center mb-4">
+                                    <span className="text-6xl animate-bounce">🏆</span>
                                 </div>
-                                <div className="hidden md:block text-right">
-                                    <span className="text-2xl font-black text-industrial-300 italic opacity-50 select-none">#{SEO_YEAR} DATA</span>
-                                </div>
+                                <h2 className="text-6xl md:text-8xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-300 opacity-90 drop-shadow-2xl">
+                                    LEADERBOARD
+                                </h2>
+                                <p className="mt-4 text-safety-500 font-bold tracking-[0.25em] text-sm md:text-base uppercase flex items-center justify-center gap-4">
+                                    <span className="w-8 h-[2px] bg-safety-500/30"></span>
+                                    Top 10 Programs Nationwide
+                                    <span className="w-8 h-[2px] bg-safety-500/30"></span>
+                                </p>
                             </div>
+
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                                 {goldList.map((school, i) => (
                                     <div key={i} className="relative group">
