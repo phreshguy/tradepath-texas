@@ -34,8 +34,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
     const s = slug[0].toLowerCase();
 
-    // 1. Check if State Landing Page
-    if (s.length === 2 && STATE_MAP[s]) {
+    // 1. Check if State Landing Page (Must be exactly 1 segment)
+    if (slug.length === 1 && s.length === 2 && STATE_MAP[s]) {
         const stateName = getStateName(s);
         const stateUpper = s.toUpperCase();
         return {
@@ -45,8 +45,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     }
 
     // 2. Check if Trade Hub Page
+    // 2. Check if Trade Hub Page (Must be exactly 1 segment)
     const tradeInfo = tradeData[s];
-    if (tradeInfo) {
+    if (slug.length === 1 && tradeInfo) {
         return {
             title: `Best ${tradeInfo.title} Schools in the USA: ${SEO_YEAR} Rankings | TradePath`,
             description: `National database of top-rated ${tradeInfo.title} programs. Compare ROI, starting salaries, and tuition across all 50 states.`,
@@ -81,8 +82,8 @@ export default async function CatchAllPage({ params }: Props) {
     const s = slug[0].toLowerCase();
     const supabase = createClient();
 
-    // --- LOGIC A: State Landing Page (/[state]) ---
-    if (s.length === 2 && STATE_MAP[s]) {
+    // --- LOGIC A: State Landing Page (/[state]) - Strict Check ---
+    if (slug.length === 1 && s.length === 2 && STATE_MAP[s]) {
         const stateUpper = s.toUpperCase();
         const stateName = getStateName(s);
 
@@ -154,9 +155,9 @@ export default async function CatchAllPage({ params }: Props) {
         );
     }
 
-    // --- LOGIC B: Trade Hub Page (/[trade]) ---
+    // --- LOGIC B: Trade Hub Page (/[trade]) - Strict Check ---
     const tradeInfo = tradeData[s];
-    if (tradeInfo) {
+    if (slug.length === 1 && tradeInfo) {
         const { data: listingsData } = await supabase
             .from('verified_roi_listings')
             .select('*')
