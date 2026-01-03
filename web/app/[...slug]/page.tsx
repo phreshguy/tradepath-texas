@@ -26,6 +26,10 @@ const tradeData: Record<string, { title: string; keyword: string }> = {
     'nursing-lpn-rn': { title: 'Nursing (LPN-RN)', keyword: 'Nursing' },
     'cybersecurity-network-tech': { title: 'Cybersecurity & Network Tech', keyword: 'Cybersecurity' },
     'cosmetology-barbering': { title: 'Cosmetology & Barbering', keyword: 'Cosmetology' },
+    'aviation-maintenance': { title: 'Aviation Maintenance', keyword: 'Aviation' },
+    'commercial-driving-cdl': { title: 'Commercial Driving (CDL)', keyword: 'Driving' },
+    'culinary-arts': { title: 'Culinary Arts', keyword: 'Culinary' },
+    'solar-energy-technology': { title: 'Solar Energy Technology', keyword: 'Solar' },
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

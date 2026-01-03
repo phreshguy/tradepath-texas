@@ -17,6 +17,10 @@ const trades = [
     "Nursing (LPN-RN)",
     "Cybersecurity & Network Tech",
     "Cosmetology & Barbering",
+    "Aviation Maintenance",
+    "Commercial Driving (CDL)",
+    "Culinary Arts",
+    "Solar Energy Technology",
 ];
 
 export default function SearchInput() {

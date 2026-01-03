@@ -16,7 +16,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Target Families including NEW expansions:
 // 46: Construction, 47: Mechanic, 48: Precision
 // 11: IT/Tech, 12: Cosmetology/Culinary, 51: Healthcare
-const TARGET_FAMILIES = ['46', '47', '48', '11', '12', '51'];
+const TARGET_FAMILIES = ['46', '47', '48', '11', '12', '51', '49', '15'];
 const BASE_URL = 'https://api.data.gov/ed/collegescorecard/v1/schools.json';
 
 async function fetchSchools() {
@@ -123,10 +123,14 @@ async function fetchSchools() {
 
                             // Precise Naming Logic for New Expansions
                             if (code.startsWith('11')) namePrefix = "Cybersecurity & Network Tech";
+                            else if (code.startsWith('1205')) namePrefix = "Culinary Arts"; // [NEW]
                             else if (code.startsWith('12')) namePrefix = "Cosmetology & Barbering";
                             else if (code.startsWith('46')) namePrefix = "Construction & Electrical";
+                            else if (code.startsWith('4706')) namePrefix = "Aviation & Auto Tech"; // [NEW]
                             else if (code.startsWith('47')) namePrefix = "Mechanic & HVAC Tech";
                             else if (code.startsWith('48')) namePrefix = "Precision & Welding";
+                            else if (code.startsWith('4902')) namePrefix = "Commercial Driving (CDL)"; // [NEW]
+                            else if (code.startsWith('1505')) namePrefix = "Solar Energy Tech"; // [NEW]
                             else if (code.startsWith('5106')) namePrefix = "Dental Assistant";
                             else if (code.startsWith('5108')) namePrefix = "Medical Clinical Assistant";
                             else if (code.startsWith('5138')) namePrefix = "Nursing (LPN-RN)";

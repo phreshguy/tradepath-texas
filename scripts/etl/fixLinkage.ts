@@ -58,6 +58,18 @@ const MAPPINGS = [
     { cip_code: '51.0601', soc_code: '31-9091', title: 'Dental Assistants' },
     { cip_code: '51.0801', soc_code: '31-9092', title: 'Medical Assistants' },
     { cip_code: '51.0904', soc_code: '29-2041', title: 'Emergency Medical Technicians' },
+
+    // --- PHASE 3: AUTHORITY EXPANSION ---
+
+    // Aviation & Transportation
+    { cip_code: '4706', soc_code: '49-3011', title: 'Aircraft Mechanics and Service Technicians' },
+    { cip_code: '4902', soc_code: '53-3032', title: 'Heavy and Tractor-Trailer Truck Drivers' },
+
+    // Culinary Arts
+    { cip_code: '1205', soc_code: '35-1011', title: 'Chefs and Head Cooks' },
+
+    // Green Energy
+    { cip_code: '1505', soc_code: '47-2231', title: 'Solar Photovoltaic Installers' },
 ];
 
 async function fixLinkage() {

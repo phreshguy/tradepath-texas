@@ -30,9 +30,16 @@ select s.name as school_name,
         OR b.soc_code LIKE '51-916%' THEN 'CNC Machining & Fabrication'
         WHEN b.soc_code = '31-9091' THEN 'Dental Assistant'
         WHEN b.soc_code = '31-9092' THEN 'Medical Clinical Assistant'
-        WHEN b.soc_code = '29-1141' THEN 'Nursing (LPN-RN)'
-        WHEN b.soc_code = '15-1212' THEN 'Cybersecurity & Network Tech'
-        WHEN b.soc_code = '39-5012' THEN 'Cosmetology & Barbering'
+        WHEN b.soc_code = '29-1141'
+        OR b.soc_code = '29-2061' THEN 'Nursing (LPN-RN)'
+        WHEN b.soc_code = '15-1212'
+        OR b.soc_code = '15-1151' THEN 'Cybersecurity & Network Tech'
+        WHEN b.soc_code = '39-5012'
+        OR b.soc_code = '39-5011' THEN 'Cosmetology & Barbering'
+        WHEN b.soc_code = '49-3011' THEN 'Aviation Maintenance'
+        WHEN b.soc_code = '53-3032' THEN 'Commercial Driving (CDL)'
+        WHEN b.soc_code = '35-1011' THEN 'Culinary Arts'
+        WHEN b.soc_code = '47-2231' THEN 'Solar Energy Technology'
         ELSE 'Other'
     END as display_category
 from programs p
@@ -67,6 +74,10 @@ select distinct city,
         WHEN display_category = 'Nursing (LPN-RN)' THEN 'nursing-lpn-rn'
         WHEN display_category = 'Cybersecurity & Network Tech' THEN 'cybersecurity-network-tech'
         WHEN display_category = 'Cosmetology & Barbering' THEN 'cosmetology-barbering'
+        WHEN display_category = 'Aviation Maintenance' THEN 'aviation-maintenance'
+        WHEN display_category = 'Commercial Driving (CDL)' THEN 'commercial-driving-cdl'
+        WHEN display_category = 'Culinary Arts' THEN 'culinary-arts'
+        WHEN display_category = 'Solar Energy Technology' THEN 'solar-energy-technology'
         ELSE 'other'
     END as trade
 from verified_roi_listings
