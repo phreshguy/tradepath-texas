@@ -19,8 +19,8 @@ export const viewport: Viewport = {
 export function generateMetadata(): Metadata {
   return {
     metadataBase: new URL('https://tradepathusa.com'),
-    title: 'TradePathUSA | Texas Trade School ROI Engine',
-    description: `Stop guessing. Start earning. Verify verified ${SEO_YEAR} trade school tuition vs salary data in Texas. Avoid debt and find high-ROI programs for Welding, HVAC, Electrician.`,
+    title: 'TradePath | America\'s Trade School ROI Engine',
+    description: `Stop guessing. Start earning. Verify verified ${SEO_YEAR} trade school tuition vs salary data. Avoid debt and find high-ROI programs for Welding, HVAC, Electrician, and Nursing.`,
     verification: {
       google: 'wfZGhN4QWS2AX9H0MTLkSoQRAdaK8TgjMaOXi8nDaz0',
       yandex: '327c1e753260492e',
