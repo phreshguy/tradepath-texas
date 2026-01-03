@@ -161,9 +161,11 @@ async function fetchWages() {
                 }
 
                 if (upsertData.length > 0) {
-                    const { error: insertError } = await supabase.from('bls_salary_data').insert(upsertData);
-                    if (insertError) console.error('Error inserting wages:', insertError);
-                    else console.log(`Inserted ${upsertData.length} wage records for ${targetState}.`);
+                    const { error: upsertError } = await supabase
+                        .from('bls_salary_data')
+                        .upsert(upsertData, { onConflict: 'soc_code,state_abbr' });
+                    if (upsertError) console.error('Error upserting wages:', upsertError);
+                    else console.log(`Upserted ${upsertData.length} wage records for ${targetState}.`);
                 }
 
                 batchSuccess = true; // Exit retry loop

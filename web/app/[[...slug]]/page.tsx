@@ -215,15 +215,32 @@ export default async function CatchAllPage({ params }: Props) {
 
                     {/* National Top 10 Leaderboard */}
                     {!isValueOnly && (
-                        <div className="mb-20">
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="w-12 h-12 bg-safety-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-safety-500/20">🏆</div>
-                                <h2 className="text-2xl md:text-3xl font-black text-industrial-900 uppercase italic">National Leaderboard</h2>
+                        <div className="mb-24">
+                            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b-2 border-industrial-200 pb-6">
+                                <div className="flex items-center gap-5">
+                                    <div className="w-16 h-16 bg-gradient-to-br from-safety-400 to-safety-600 rounded-2xl flex items-center justify-center text-3xl shadow-xl shadow-safety-500/30 rotate-3">
+                                        🏆
+                                    </div>
+                                    <div>
+                                        <h2 className="text-3xl md:text-5xl font-black text-industrial-950 uppercase italic leading-none tracking-tighter">
+                                            National <span className="text-safety-600">Leaderboard</span>
+                                        </h2>
+                                        <p className="text-slate-500 font-bold uppercase tracking-widest text-xs mt-2 flex items-center gap-2">
+                                            <span className="w-8 h-[2px] bg-safety-500"></span>
+                                            Top 10 Programs Nationwide
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="hidden md:block text-right">
+                                    <span className="text-2xl font-black text-industrial-300 italic opacity-50 select-none">#{SEO_YEAR} DATA</span>
+                                </div>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                                 {goldList.map((school, i) => (
-                                    <div key={i} className="relative">
-                                        <div className="absolute -top-2 -left-2 w-8 h-8 bg-industrial-900 text-safety-500 rounded-lg flex items-center justify-center font-black z-10 shadow-lg text-sm">#{i + 1}</div>
+                                    <div key={i} className="relative group">
+                                        <div className="absolute -top-3 -left-3 w-10 h-10 bg-industrial-950 text-safety-500 rounded-xl flex items-center justify-center font-black z-10 shadow-xl group-hover:scale-110 transition-transform border border-white/10">
+                                            #{i + 1}
+                                        </div>
                                         <ListingCard school={school} />
                                     </div>
                                 ))}
@@ -232,9 +249,12 @@ export default async function CatchAllPage({ params }: Props) {
                     )}
 
                     {/* Browse by State (Results Only) */}
-                    <div className="space-y-16">
-                        <div className="border-b border-slate-200 pb-4">
-                            <h2 className="text-2xl font-black text-industrial-900 uppercase tracking-widest">Browse by State</h2>
+                    <div className="space-y-20">
+                        <div className="flex items-center gap-4 mb-10 overflow-hidden">
+                            <h2 className="text-2xl md:text-3xl font-black text-industrial-950 uppercase tracking-tighter italic flex-shrink-0">
+                                State <span className="text-industrial-400">Directory</span>
+                            </h2>
+                            <div className="h-[2px] w-full bg-gradient-to-r from-industrial-200 to-transparent"></div>
                         </div>
                         {sortedStates.map((stateAbbr) => (
                             <div key={stateAbbr} className="scroll-mt-24">
