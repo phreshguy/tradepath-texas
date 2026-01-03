@@ -25,24 +25,21 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex items-center gap-8 text-sm font-medium">
-                        {/* Top Trades Dropdown */}
+                        {/* Trade Programs Dropdown */}
                         <div className="relative group py-4">
-                            <button className="text-slate-300 group-hover:text-white transition-colors flex items-center gap-1">
-                                Top Trades
-                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+                            <button className="text-slate-300 group-hover:text-white transition-colors flex items-center gap-1 uppercase tracking-wider text-[11px] font-black">
+                                Trade Programs
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7" />
                                 </svg>
                             </button>
-                            <div className="absolute top-full left-0 w-64 bg-industrial-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2">
+                            <div className="absolute top-full left-0 w-64 bg-industrial-800 border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2-mt-1">
                                 <div className="grid grid-cols-1 gap-1">
-                                    <Link href="/programs/welding" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Welding Technology</Link>
-                                    <Link href="/programs/hvac" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">HVAC/R Technician</Link>
-                                    <Link href="/programs/electrician" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Electrician & Power</Link>
-                                    <Link href="/programs/plumbing" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Plumbing & Pipefitting</Link>
-                                    <Link href="/programs/automotive" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Automotive Service</Link>
-                                    <Link href="/programs/diesel" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Diesel & Heavy Equip</Link>
-                                    <Link href="/programs/construction" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Carpentry & Construction</Link>
-                                    <Link href="/programs/machining" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">CNC Machining</Link>
+                                    <Link href="/welding" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Welding Technology</Link>
+                                    <Link href="/hvac" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">HVAC/R Technician</Link>
+                                    <Link href="/electrician" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Electrician & Power</Link>
+                                    <Link href="/plumbing" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Plumbing & Pipefitting</Link>
+                                    <Link href="/mechanic" className="px-4 py-2 hover:bg-white/5 rounded-lg text-slate-300 hover:text-safety-500 transition-colors">Auto Mechanic Service</Link>
                                 </div>
                             </div>
                         </div>
@@ -108,16 +105,15 @@ export default function Navbar() {
                             Contact
                         </Link>
 
-                        {/* Mobile Top Trades */}
+                        {/* Mobile Trade Programs */}
                         <div className="px-3 py-3 border-t border-white/5 mt-2">
-                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Top Programs</span>
+                            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">Trade Programs</span>
                             <div className="grid grid-cols-2 gap-2">
-                                <Link href="/programs/welding" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Welding</Link>
-                                <Link href="/programs/hvac" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">HVAC</Link>
-                                <Link href="/programs/electrician" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Electrician</Link>
-                                <Link href="/programs/plumbing" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Plumbing</Link>
-                                <Link href="/programs/automotive" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Auto Tech</Link>
-                                <Link href="/programs/diesel" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Diesel</Link>
+                                <Link href="/welding" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Welding</Link>
+                                <Link href="/hvac" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">HVAC</Link>
+                                <Link href="/electrician" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Electrician</Link>
+                                <Link href="/plumbing" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Plumbing</Link>
+                                <Link href="/mechanic" onClick={closeMenu} className="text-sm text-slate-400 hover:text-safety-500 transition-colors">Mechanic</Link>
                             </div>
                         </div>
 
