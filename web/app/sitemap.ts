@@ -56,6 +56,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (seoPages && seoPages.length > 0) {
         // Create City Hubs (/[state]/[city])
         const uniqueCityKeys = Array.from(new Set(seoPages.map((p: any) => `${p.state.toLowerCase()}|${p.city}`))) as string[];
+
+        // Create National Trade Hubs (/[trade])
+        const uniqueTrades = Array.from(new Set(seoPages.map((p: any) => p.trade))) as string[];
+        const tradeHubRoutes = uniqueTrades.map((trade) => ({
+            url: `${BASE_URL}/${trade}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly' as const,
+            priority: 0.9,
+        }));
+
         cityHubRoutes = uniqueCityKeys.map((key) => {
             const [state, city] = key.split('|');
             return {
@@ -73,8 +83,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             changeFrequency: 'weekly' as const,
             priority: 0.7,
         }));
+
+        return [...staticRoutes, ...stateRoutes, ...tradeHubRoutes, ...blogRoutes, ...cityHubRoutes, ...pSEORoutes];
     }
 
-    return [...staticRoutes, ...stateRoutes, ...blogRoutes, ...cityHubRoutes, ...pSEORoutes];
+    return [...staticRoutes, ...stateRoutes, ...blogRoutes];
 }
 
