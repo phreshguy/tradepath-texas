@@ -137,14 +137,40 @@ export default async function CatchAllPage({ params }: Props) {
     // --- LOGIC B: Trade Hub Page (/[trade]) ---
     const tradeInfo = tradeData[s];
     if (tradeInfo) {
-        const { data: listings } = await supabase
+        const { data: listingsData } = await supabase
             .from('verified_roi_listings')
             .select('*')
             .ilike('program_name', `%${tradeInfo.keyword}%`)
             .order('calculated_roi', { ascending: false })
             .limit(200);
 
-        if (!listings || listings.length === 0) notFound();
+        let listings = listingsData || [];
+        let isValueOnly = false;
+
+        // --- FALLBACK (Strict matching didn't work or view is empty) ---
+        if (listings.length === 0) {
+            const { data: fallbackData } = await supabase
+                .from('programs')
+                .select('program_name, tuition_cost, school_id, schools(name, city, state, zip, website)')
+                .ilike('program_name', `%${tradeInfo.keyword}%`)
+                .limit(100);
+
+            if (fallbackData && fallbackData.length > 0) {
+                listings = fallbackData.map((p: any) => ({
+                    school_name: p.schools.name,
+                    city: p.schools.city,
+                    state: p.schools.state,
+                    program_name: p.program_name,
+                    tuition_cost: p.tuition_cost,
+                    projected_salary: 0,
+                    calculated_roi: -(p.tuition_cost || 0),
+                    website: p.schools.website
+                }));
+                isValueOnly = true;
+            }
+        }
+
+        if (listings.length === 0) notFound();
 
         const goldList = listings.slice(0, 10);
         const stateGroups = listings.reduce((acc: Record<string, any[]>, item) => {
@@ -173,21 +199,37 @@ export default async function CatchAllPage({ params }: Props) {
                 </section>
 
                 <div className="max-w-7xl mx-auto px-4 -mt-16 relative z-20">
+                    {/* FALLBACK NOTICE */}
+                    {isValueOnly && (
+                        <div className="bg-amber-50 border-l-4 border-amber-500 p-6 rounded-r-xl mb-12 shadow-sm flex gap-4 items-start">
+                            <div className="text-2xl text-amber-500">⚠️</div>
+                            <div>
+                                <h3 className="font-bold text-amber-900 mb-1">Cost Data Only</h3>
+                                <p className="text-amber-800 text-sm opacity-90 leading-relaxed">
+                                    We are currently updating our national wage database for {tradeInfo.title} programs.
+                                    Listings below are sorted by **Tuition Cost** only while we verify 2024 starting salaries.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* National Top 10 Leaderboard */}
-                    <div className="mb-20">
-                        <div className="flex items-center gap-4 mb-8">
-                            <div className="w-12 h-12 bg-safety-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-safety-500/20">🏆</div>
-                            <h2 className="text-2xl md:text-3xl font-black text-industrial-900 uppercase italic">National Leaderboard</h2>
+                    {!isValueOnly && (
+                        <div className="mb-20">
+                            <div className="flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 bg-safety-500 rounded-2xl flex items-center justify-center text-2xl shadow-lg shadow-safety-500/20">🏆</div>
+                                <h2 className="text-2xl md:text-3xl font-black text-industrial-900 uppercase italic">National Leaderboard</h2>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+                                {goldList.map((school, i) => (
+                                    <div key={i} className="relative">
+                                        <div className="absolute -top-2 -left-2 w-8 h-8 bg-industrial-900 text-safety-500 rounded-lg flex items-center justify-center font-black z-10 shadow-lg text-sm">#{i + 1}</div>
+                                        <ListingCard school={school} />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                            {goldList.map((school, i) => (
-                                <div key={i} className="relative">
-                                    <div className="absolute -top-2 -left-2 w-8 h-8 bg-industrial-900 text-safety-500 rounded-lg flex items-center justify-center font-black z-10 shadow-lg text-sm">#{i + 1}</div>
-                                    <ListingCard school={school} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    )}
 
                     {/* Browse by State (Results Only) */}
                     <div className="space-y-16">
