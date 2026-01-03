@@ -49,14 +49,14 @@ create or replace function get_seo_combinations() returns table (
 select distinct city,
     state,
     CASE
-        WHEN display_category = 'Welding Technology' THEN 'welding-technology'
-        WHEN display_category = 'HVAC/R Technician' THEN 'hvac-r-technician'
-        WHEN display_category = 'Electrician & Power Systems' THEN 'electrician-power-systems'
-        WHEN display_category = 'Plumbing & Pipefitting' THEN 'plumbing-pipefitting'
-        WHEN display_category = 'Automotive Service Tech' THEN 'automotive-service-tech'
-        WHEN display_category = 'Diesel & Heavy Equipment' THEN 'diesel-heavy-equipment'
-        WHEN display_category = 'Carpentry & Construction' THEN 'carpentry-construction'
-        WHEN display_category = 'CNC Machining & Fabrication' THEN 'cnc-machining-fabrication'
+        WHEN display_category = 'Welding Technology' THEN 'welding'
+        WHEN display_category = 'HVAC/R Technician' THEN 'hvac'
+        WHEN display_category = 'Electrician & Power Systems' THEN 'electrician'
+        WHEN display_category = 'Plumbing & Pipefitting' THEN 'plumbing'
+        WHEN display_category = 'Automotive Service Tech' THEN 'automotive'
+        WHEN display_category = 'Diesel & Heavy Equipment' THEN 'diesel'
+        WHEN display_category = 'Carpentry & Construction' THEN 'construction'
+        WHEN display_category = 'CNC Machining & Fabrication' THEN 'machining'
         ELSE 'other'
     END as trade
 from verified_roi_listings
