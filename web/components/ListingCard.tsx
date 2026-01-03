@@ -82,7 +82,9 @@ export default function ListingCard({ school }: ListingCardProps) {
                             </a>
                         </div>
                         <span className="text-2xl font-black text-industrial-900">
-                            ${school.projected_salary?.toLocaleString()}
+                            {school.projected_salary && school.projected_salary > 0
+                                ? `$${school.projected_salary.toLocaleString()}`
+                                : 'Fetching...'}
                         </span>
                     </div>
                 </div>
