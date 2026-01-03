@@ -292,65 +292,67 @@ export default async function CatchAllPage({ params }: Props) {
                 </div>
             </div>
         );
-        // --- LOGIC C: City Trade Page (/[state]/[city]/[trade]) ---
-        if (slug.length === 3) {
-            const stateAbbr = slug[0].toLowerCase();
-            const citySlug = slug[1];
-            const tradeKey = slug[2].toLowerCase();
-
-            const tradeInfo = tradeData[tradeKey];
-            if (STATE_MAP[stateAbbr] && tradeInfo) {
-                const stateName = getStateName(stateAbbr);
-                // Reconstruct city name approximately or fetch if needed. 
-                // Ideally we'd map slug back to real city name, but for now capitalized dashed works for H1s usually
-                const cityName = citySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
-
-                const { data: listings } = await supabase
-                    .from('verified_roi_listings')
-                    .select('*')
-                    .eq('state', stateAbbr.toUpperCase())
-                    .ilike('city', cityName) // Fuzzy match city name
-                    .eq('display_category', tradeInfo.title)
-                    .order('calculated_roi', { ascending: false });
-
-                // If found, render city-specific view
-                if (listings && listings.length > 0) {
-                    return (
-                        <div className="min-h-screen bg-industrial-100 pb-24">
-                            <section className="bg-industrial-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
-                                <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
-                                <div className="max-w-7xl mx-auto relative z-10 text-center md:text-left">
-                                    <div className="mb-4 text-sm font-medium text-slate-400">
-                                        <Link href="/" className="hover:text-white transition-colors">National</Link>
-                                        <span className="mx-2">/</span>
-                                        <Link href={`/${stateAbbr}`} className="hover:text-white transition-colors">{stateName}</Link>
-                                        <span className="mx-2">/</span>
-                                        <span className="text-safety-500">{cityName}</span>
-                                    </div>
-                                    <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
-                                        Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-200">{tradeInfo.title}</span> Schools <br /> in {cityName}, {stateAbbr.toUpperCase()}
-                                    </h1>
-                                    <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
-                                        Compare local {tradeInfo.title} programs in {cityName}. Verified tuition and salary data.
-                                    </p>
-                                </div>
-                            </section>
-
-                            <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20">
-                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {listings.map((school: any, i: number) => (
-                                        <ListingCard key={i} school={school} />
-                                    ))}
-                                </div>
-                            </section>
-                        </div>
-                    );
-                }
-                // If no generic listings found for city, maybe fallback or show state?
-                // For now, let's fall through to 404 to avoid misleading content, or better:
-                // render the page with a "No specific listings in city, showing state matches"
-            }
-        }
-
-        notFound();
     }
+
+    // --- LOGIC C: City Trade Page (/[state]/[city]/[trade]) ---
+    if (slug.length === 3) {
+        const stateAbbr = slug[0].toLowerCase();
+        const citySlug = slug[1];
+        const tradeKey = slug[2].toLowerCase();
+
+        const tradeInfo = tradeData[tradeKey];
+        if (STATE_MAP[stateAbbr] && tradeInfo) {
+            const stateName = getStateName(stateAbbr);
+            // Reconstruct city name approximately or fetch if needed. 
+            // Ideally we'd map slug back to real city name, but for now capitalized dashed works for H1s usually
+            const cityName = citySlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+
+            const { data: listings } = await supabase
+                .from('verified_roi_listings')
+                .select('*')
+                .eq('state', stateAbbr.toUpperCase())
+                .ilike('city', cityName) // Fuzzy match city name
+                .eq('display_category', tradeInfo.title)
+                .order('calculated_roi', { ascending: false });
+
+            // If found, render city-specific view
+            if (listings && listings.length > 0) {
+                return (
+                    <div className="min-h-screen bg-industrial-100 pb-24">
+                        <section className="bg-industrial-900 text-white pt-24 pb-32 px-4 relative overflow-hidden">
+                            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+                            <div className="max-w-7xl mx-auto relative z-10 text-center md:text-left">
+                                <div className="mb-4 text-sm font-medium text-slate-400">
+                                    <Link href="/" className="hover:text-white transition-colors">National</Link>
+                                    <span className="mx-2">/</span>
+                                    <Link href={`/${stateAbbr}`} className="hover:text-white transition-colors">{stateName}</Link>
+                                    <span className="mx-2">/</span>
+                                    <span className="text-safety-500">{cityName}</span>
+                                </div>
+                                <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
+                                    Top <span className="text-transparent bg-clip-text bg-gradient-to-r from-safety-500 to-yellow-200">{tradeInfo.title}</span> Schools <br /> in {cityName}, {stateAbbr.toUpperCase()}
+                                </h1>
+                                <p className="text-lg text-slate-300 max-w-2xl leading-relaxed">
+                                    Compare local {tradeInfo.title} programs in {cityName}. Verified tuition and salary data.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section className="max-w-7xl mx-auto px-4 -mt-24 relative z-20">
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {listings.map((school: any, i: number) => (
+                                    <ListingCard key={i} school={school} />
+                                ))}
+                            </div>
+                        </section>
+                    </div>
+                );
+            }
+            // If no generic listings found for city, maybe fallback or show state?
+            // For now, let's fall through to 404 to avoid misleading content, or better:
+            // render the page with a "No specific listings in city, showing state matches"
+        }
+    }
+
+    notFound();
+}
